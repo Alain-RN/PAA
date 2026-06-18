@@ -1,0 +1,93 @@
+/*
+ * Input Component Styles — AdaptLearn.ia
+ */
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.input-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.input-field-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon-left {
+  position: absolute;
+  left: 1rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon-right {
+  position: absolute;
+  right: 1rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.input-field {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-size: 0.95rem;
+  transition: var(--transition-smooth);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+}
+
+.input-field.has-icon-left {
+  padding-left: 2.75rem;
+}
+
+.input-field.has-icon-right {
+  padding-right: 2.75rem;
+}
+
+.input-field.input-error {
+  border-color: var(--accent-danger);
+}
+
+.input-field.input-error:focus {
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+}
+
+.input-error-msg {
+  font-size: 0.8rem;
+  color: var(--accent-danger);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* ─── Select ─── */
+.input-field[role="combobox"],
+select.input-field {
+  appearance: none;
+  cursor: pointer;
+}

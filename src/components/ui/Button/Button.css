@@ -1,0 +1,204 @@
+
+/* ─── Base ─── */
+.btn {
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+
+  min-height: 38px;
+  padding: 0 1rem;
+
+  border: none;
+  border-radius: 12px;
+
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  white-space: nowrap;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  transition:
+    transform 80ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ─── Press Effect ─── */
+.btn:active:not(:disabled) {
+  transform: translateY(4px);
+}
+
+/* ─── Disabled ─── */
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ─── Sizes ─── */
+.btn-sm {
+  min-height: 38px;
+  padding: 0 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 10px;
+}
+
+.btn-md {
+  min-height: 42px;
+  padding: 0 1rem;
+  font-size: 0.9rem;
+}
+
+.btn-lg {
+  min-height: 50px;
+  padding: 0 1.5rem;
+  font-size: 1rem;
+  border-radius: 14px;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* ─────────────────────────── */
+/* PRIMARY */
+/* ─────────────────────────── */
+
+.btn-primary {
+  background: #7c3aed;
+  color: #fff;
+  box-shadow: 0 4px 0 #5b21b6;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #8b5cf6;
+}
+
+.btn-primary:active:not(:disabled) {
+  box-shadow: none;
+}
+
+/* ─────────────────────────── */
+/* SECONDARY */
+/* ─────────────────────────── */
+
+.btn-secondary {
+  background: #475569;
+  color: #fff;
+  box-shadow: 0 4px 0 #334155;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #64748b;
+}
+
+.btn-secondary:active:not(:disabled) {
+  box-shadow: none;
+}
+
+/* ─────────────────────────── */
+/* SUCCESS */
+/* ─────────────────────────── */
+
+.btn-accent {
+  background: #22c55e;
+  color: #fff;
+  box-shadow: 0 4px 0 #15803d;
+}
+
+.btn-accent:hover:not(:disabled) {
+  background: #4ade80;
+}
+
+.btn-accent:active:not(:disabled) {
+  box-shadow: none;
+}
+
+/* ─────────────────────────── */
+/* DANGER */
+/* ─────────────────────────── */
+
+.btn-danger {
+  background: #ef4444;
+  color: #fff;
+  box-shadow: 0 4px 0 #b91c1c;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #f87171;
+}
+
+.btn-danger:active:not(:disabled) {
+  box-shadow: none;
+}
+
+/* ─────────────────────────── */
+/* WARNING */
+/* ─────────────────────────── */
+
+.btn-warning {
+  background: #f59e0b;
+  color: #fff;
+  box-shadow: 0 4px 0 #b45309;
+}
+
+.btn-warning:hover:not(:disabled) {
+  background: #fbbf24;
+}
+
+.btn-warning:active:not(:disabled) {
+  box-shadow: none;
+}
+
+/* ─────────────────────────── */
+/* GHOST */
+/* ─────────────────────────── */
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  box-shadow: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.btn-ghost:active:not(:disabled) {
+  transform: none;
+}
+
+/* ─────────────────────────── */
+/* LOADING */
+/* ─────────────────────────── */
+
+.btn-loading .btn-icon-left,
+.btn-loading .btn-icon-right {
+  display: none;
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

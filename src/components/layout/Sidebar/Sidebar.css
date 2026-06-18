@@ -1,0 +1,6 @@
+.btn-sidebar {
+    background: transparent ;
+}
+.btn-sidebar:hover {
+    background: #202f3684;
+}
