@@ -1,6 +1,6 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppStateProvider, useAppState } from './hooks/useAppState';
-import { Sidebar } from './components/Sidebar';
+import { AppLayout } from './components/layout';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
@@ -29,38 +29,35 @@ function AppContent() {
   }
 
   return (
-    <div className="app-container">
-      <Sidebar />
-      <main className="main-layout">
-        <Routes>
-          {/* Student Routes */}
-          {currentUser.role === 'student' ? (
-            <>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/catalog" element={<CourseCatalog />} />
-              <Route path="/course/:courseId" element={<CourseDetail />} />
-              <Route path="/lesson/:courseId/:chapterId" element={<LessonView />} />
-              <Route path="/quiz/:courseId/:chapterId" element={<AdaptiveQuiz />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/history" element={<HistoryPage />} />
-              <Route path="/leaderboard" element={<Leaderboard />} />
-              {/* Fallback to student dashboard */}
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </>
-          ) : (
-            <>
-              {/* Admin Routes */}
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/courses" element={<CourseManager />} />
-              <Route path="/admin/users" element={<UserManager />} />
-              <Route path="/admin/analytics" element={<AdminDashboard />} />
-              {/* Fallback to admin console */}
-              <Route path="*" element={<Navigate to="/admin" replace />} />
-            </>
-          )}
-        </Routes>
-      </main>
-    </div>
+    <Routes>
+      <Route element={<AppLayout />}>
+        {/* Student Routes */}
+        {currentUser.role === 'student' ? (
+          <>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/catalog" element={<CourseCatalog />} />
+            <Route path="/course/:courseId" element={<CourseDetail />} />
+            <Route path="/lesson/:courseId/:chapterId" element={<LessonView />} />
+            <Route path="/quiz/:courseId/:chapterId" element={<AdaptiveQuiz />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            {/* Fallback to student dashboard */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </>
+        ) : (
+          <>
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/courses" element={<CourseManager />} />
+            <Route path="/admin/users" element={<UserManager />} />
+            <Route path="/admin/analytics" element={<AdminDashboard />} />
+            {/* Fallback to admin console */}
+            <Route path="*" element={<Navigate to="/admin" replace />} />
+          </>
+        )}
+      </Route>
+    </Routes>
   );
 }
 

@@ -107,6 +107,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '1.5rem',
     position: 'relative',
     overflow: 'hidden',
+    
   },
   blurBg1: {
     position: 'absolute',

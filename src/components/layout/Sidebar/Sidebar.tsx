@@ -19,6 +19,7 @@ import {
   UserCheck,
   UserCog
 } from 'lucide-react';
+import Button from '../../ui/Button/Button';
 
 export const Sidebar: React.FC = () => {
   const { currentUser, logout, login, usersList } = useAppState();
@@ -52,18 +53,18 @@ export const Sidebar: React.FC = () => {
 
   const navItems = isStudent
     ? [
-        { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, path: '/dashboard' },
-        { id: 'catalog', label: 'Cours & Leçons', icon: BookOpen, path: '/catalog' },
-        { id: 'leaderboard', label: 'Classement', icon: Trophy, path: '/leaderboard' },
-        { id: 'history', label: 'Historique', icon: History, path: '/history' },
-        { id: 'profile', label: 'Mon Profil', icon: UserIcon, path: '/profile' },
-      ]
+      { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, path: '/dashboard' },
+      { id: 'catalog', label: 'Mes Cours', icon: BookOpen, path: '/catalog' },
+      { id: 'leaderboard', label: 'Classement', icon: Trophy, path: '/leaderboard' },
+      { id: 'history', label: 'Historique', icon: History, path: '/history' },
+      { id: 'profile', label: 'Mon Profil', icon: UserIcon, path: '/profile' },
+    ]
     : [
-        { id: 'admin-dashboard', label: 'Console Admin', icon: LayoutGrid, path: '/admin' },
-        { id: 'admin-courses', label: 'Gestion des Cours', icon: FileText, path: '/admin/courses' },
-        { id: 'admin-users', label: 'Utilisateurs', icon: Users, path: '/admin/users' },
-        { id: 'admin-analytics', label: 'Analytics avancés', icon: BarChart3, path: '/admin/analytics' },
-      ];
+      { id: 'admin-dashboard', label: 'Console Admin', icon: LayoutGrid, path: '/admin' },
+      { id: 'admin-courses', label: 'Gestion des Cours', icon: FileText, path: '/admin/courses' },
+      { id: 'admin-users', label: 'Utilisateurs', icon: Users, path: '/admin/users' },
+      { id: 'admin-analytics', label: 'Analytics avancés', icon: BarChart3, path: '/admin/analytics' },
+    ];
 
   const xpPercentage = isStudent ? (currentUser.xp / currentUser.xpNextLevel) * 100 : 0;
 
@@ -164,10 +165,10 @@ export const Sidebar: React.FC = () => {
           <span>Ollama : Llama3 local connecté</span>
         </div>
 
-        <button onClick={logout} style={styles.logoutBtn}>
+        <Button variant="danger" onClick={logout} size="md">
           <LogOut size={16} />
           <span>Déconnexion</span>
-        </button>
+        </Button>
       </div>
     </aside>
   );
@@ -182,7 +183,7 @@ const styles: Record<string, React.CSSProperties> = {
     left: 0,
     background: 'var(--bg-mode)',
     backdropFilter: 'blur(20px)',
-    borderRight: '1px solid var(--glass-border)',
+    borderRight: '2px solid var(--glass-border)',
     display: 'flex',
     flexDirection: 'column',
     padding: '1.5rem',

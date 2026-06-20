@@ -9,10 +9,8 @@
 }
 
 body {
-  background-color: var(--bg-primary);
-  background-image:
-    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.1) 0px, transparent 50%);
+  background-color: var(--bg-mode);
+
   background-attachment: fixed;
   color: var(--text-primary);
   font-family: var(--font-primary);

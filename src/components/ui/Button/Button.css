@@ -3,13 +3,13 @@
 .btn {
   font-family: var(--font-primary);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 14px;
 
-  min-height: 38px;
-  padding: 0 1rem;
+  min-height: 46px;
+  padding: 0 2rem;
 
-  border: none;
-  border-radius: 12px;
+  border: 2px solid transparent;
+  border-radius: 14px;
 
   cursor: pointer;
   user-select: none;
@@ -27,6 +27,8 @@
     box-shadow 150ms ease;
 
   -webkit-tap-highlight-color: transparent;
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
 /* ─── Press Effect ─── */
@@ -43,14 +45,14 @@
 
 /* ─── Sizes ─── */
 .btn-sm {
-  min-height: 38px;
+  min-height: 42px;
   padding: 0 0.75rem;
   font-size: 0.8rem;
   border-radius: 10px;
 }
 
 .btn-md {
-  min-height: 42px;
+  min-height: 46px;
   padding: 0 1rem;
   font-size: 0.9rem;
 }
@@ -71,13 +73,14 @@
 /* ─────────────────────────── */
 
 .btn-primary {
-  background: #7c3aed;
+  background: #7c3aede7;
   color: #fff;
-  box-shadow: 0 4px 0 #5b21b6;
+  box-shadow: 0 5px 0 #5b21b6;
+  border-bottom: none;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #8b5cf6;
+  background: #7c3aed;
 }
 
 .btn-primary:active:not(:disabled) {
@@ -89,17 +92,16 @@
 /* ─────────────────────────── */
 
 .btn-secondary {
-  background: #475569;
+  background: #323d4b44;
   color: #fff;
-  box-shadow: 0 4px 0 #334155;
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: #64748b;
+  border: 2px solid #334155;
+  border-bottom: none;
+  box-shadow: 0 5px 0 #334155;
 }
 
 .btn-secondary:active:not(:disabled) {
   box-shadow: none;
+  border: 2px solid #334155;
 }
 
 /* ─────────────────────────── */
@@ -109,7 +111,7 @@
 .btn-accent {
   background: #22c55e;
   color: #fff;
-  box-shadow: 0 4px 0 #15803d;
+  box-shadow: 0 5px 0 #15803d;
 }
 
 .btn-accent:hover:not(:disabled) {
@@ -125,13 +127,13 @@
 /* ─────────────────────────── */
 
 .btn-danger {
-  background: #ef4444;
+  background: #ef4444e2;
   color: #fff;
-  box-shadow: 0 4px 0 #b91c1c;
+  box-shadow: 0 5px 0 #b91c1c;
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: #f87171;
+  background: #ef4444;
 }
 
 .btn-danger:active:not(:disabled) {
@@ -145,7 +147,7 @@
 .btn-warning {
   background: #f59e0b;
   color: #fff;
-  box-shadow: 0 4px 0 #b45309;
+  box-shadow: 0 5px 0 #b45309;
 }
 
 .btn-warning:hover:not(:disabled) {
