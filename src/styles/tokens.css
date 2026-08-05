@@ -18,13 +18,13 @@
   --bg-secondary: #0f172a;
 
   /* ─── Glassmorphism ─── */
-  --glass-bg: rgba(15, 23, 42, 0.55);
+  --glass-bg: rgba(15, 23, 42, 0.008);
   --glass-border: rgba(255, 255, 255, 0.243);
-  --glass-border-focus: rgba(99, 102, 241, 0.4);
+  --glass-border-focus: #3f85a7;
   --glass-glow: rgba(99, 102, 241, 0.15);
 
   /* ─── Accent Colors ─── */
-  --accent-primary: #6366f1;           /* Indigo */
+  --accent-primary: #49c0f8;          
   --accent-primary-glow: rgba(99, 102, 241, 0.3);
   --accent-secondary: #a855f7;         /* Purple */
   --accent-secondary-glow: rgba(168, 85, 247, 0.3);
@@ -36,12 +36,12 @@
   --accent-danger-glow: rgba(239, 68, 68, 0.3);
 
   /* ─── Text ─── */
-  --text-primary: #f8fafc;
+  --text-primary: #dce6ec;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
 
   /* ─── Layout ─── */
-  --sidebar-width: 260px;
+  --sidebar-width: 256px;
 
   /* ─── Border Radius ─── */
   --radius-xs: 4px;

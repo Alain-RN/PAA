@@ -29,7 +29,6 @@ export const Card: React.FC<CardProps> = ({
     `card-padding-${padding}`,
     interactive ? 'card-interactive' : '',
     glow ? 'card-glow' : '',
-    glowSuccess ? 'card-glow-success' : '',
     className,
   ]
     .filter(Boolean)

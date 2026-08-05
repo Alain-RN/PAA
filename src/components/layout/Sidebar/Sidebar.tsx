@@ -13,13 +13,7 @@ import {
   FileText,
   Users,
   BarChart3,
-  LogOut,
-  Cpu,
-  Flame,
-  UserCheck,
-  UserCog
 } from 'lucide-react';
-import Button from '../../ui/Button/Button';
 
 export const Sidebar: React.FC = () => {
   const { currentUser, logout, login, usersList } = useAppState();
@@ -32,32 +26,13 @@ export const Sidebar: React.FC = () => {
   const isStudent = currentUser.role === 'student';
   const isAdmin = currentUser.role === 'admin';
 
-  // Quick switch role utility (extremely convenient for student defense demo)
-  const toggleRole = () => {
-    if (isStudent) {
-      // Switch to admin
-      const adminUser = usersList.find(u => u.role === 'admin');
-      if (adminUser) {
-        login(adminUser.email, 'admin');
-        navigate('/admin');
-      }
-    } else {
-      // Switch to student
-      const studentUser = usersList.find(u => u.role === 'student');
-      if (studentUser) {
-        login(studentUser.email, 'student');
-        navigate('/dashboard');
-      }
-    }
-  };
-
   const navItems = isStudent
     ? [
-      { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, path: '/dashboard' },
-      { id: 'catalog', label: 'Mes Cours', icon: BookOpen, path: '/catalog' },
+      { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+      { id: 'catalog', label: 'Cours', icon: BookOpen, path: '/catalog' },
       { id: 'leaderboard', label: 'Classement', icon: Trophy, path: '/leaderboard' },
       { id: 'history', label: 'Historique', icon: History, path: '/history' },
-      { id: 'profile', label: 'Mon Profil', icon: UserIcon, path: '/profile' },
+      { id: 'profile', label: 'Profil', icon: UserIcon, path: '/profile' },
     ]
     : [
       { id: 'admin-dashboard', label: 'Console Admin', icon: LayoutGrid, path: '/admin' },
@@ -66,53 +41,11 @@ export const Sidebar: React.FC = () => {
       { id: 'admin-analytics', label: 'Analytics avancés', icon: BarChart3, path: '/admin/analytics' },
     ];
 
-  const xpPercentage = isStudent ? (currentUser.xp / currentUser.xpNextLevel) * 100 : 0;
-
   return (
     <aside style={styles.sidebar}>
       <div style={styles.logoContainer}>
-        <div style={styles.logoIcon}>
-          <Cpu size={22} color="var(--accent-primary)" />
-        </div>
-        <span style={styles.logoText}>AdaptLearn<span style={{ color: 'var(--accent-primary)' }}>.ia</span></span>
+        <img style={{ width: "190px", height: "40px", marginLeft: "15px" }} src="/mallowotter-text-removebg.png" alt="" />
       </div>
-
-      {/* Gamification widget in sidebar (Student only) */}
-      {/* {isStudent && (
-        <div style={styles.gamificationWidget}>
-          <div className="flex-between mb-1">
-            <span style={styles.studentName}>{currentUser.name}</span>
-            <div style={styles.streakBadge} title="Série de jours actifs">
-              <Flame size={14} color="var(--accent-warning)" fill="var(--accent-warning)" />
-              <span>{currentUser.streak} j</span>
-            </div>
-          </div>
-          <div className="flex-between mb-1" style={{ fontSize: '0.8rem' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Niveau {currentUser.level}</span>
-            <span style={{ color: 'var(--accent-primary)', fontWeight: 'bold' }}>
-              {currentUser.xp} / {currentUser.xpNextLevel} XP
-            </span>
-          </div>
-          <ProgressBar progress={xpPercentage} />
-        </div>
-      )} */}
-
-      {/* Admin Widget */}
-      {/* {isAdmin && (
-        <div style={styles.adminWidget}>
-          <div className="flex-between">
-            <span style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--accent-secondary)' }}>
-              Mode Administration
-            </span>
-            <UserCog size={16} color="var(--accent-secondary)" />
-          </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-            {currentUser.name}
-          </div>
-        </div>
-      )} */}
-
-      {/* Navigation */}
       <nav style={styles.nav}>
         {navItems.map((item) => {
           const isActive =
@@ -142,34 +75,6 @@ export const Sidebar: React.FC = () => {
         })}
       </nav>
 
-      {/* Footer Actions */}
-      <div style={styles.footer}>
-        {/* Quick Role Switcher (Crucial for Demo) */}
-        <button onClick={toggleRole} style={styles.switchRoleBtn}>
-          {isStudent ? (
-            <>
-              <UserCog size={16} color="var(--text-secondary)" />
-              <span>Passer en Mode Admin</span>
-            </>
-          ) : (
-            <>
-              <UserCheck size={16} color="var(--text-secondary)" />
-              <span>Passer en Mode Étudiant</span>
-            </>
-          )}
-        </button>
-
-        {/* Ollama AI Status Indicator */}
-        <div className="ollama-status" style={{ width: '100%', justifyContent: 'center', margin: '0.5rem 0' }}>
-          <div className="ollama-pulse"></div>
-          <span>Ollama : Llama3 local connecté</span>
-        </div>
-
-        <Button variant="danger" onClick={logout} size="md">
-          <LogOut size={16} />
-          <span>Déconnexion</span>
-        </Button>
-      </div>
     </aside>
   );
 };
@@ -186,7 +91,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRight: '2px solid var(--glass-border)',
     display: 'flex',
     flexDirection: 'column',
-    padding: '1.5rem',
+    padding: '16px',
     zIndex: 100,
   },
   logoContainer: {
@@ -250,7 +155,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   navButton: {
     border: '2px solid transparent',
-    color: 'var(--text-secondary)',
+    color: 'var(--text-primary)',
     display: 'flex',
     alignItems: 'center',
     gap: '0.75rem',
@@ -268,7 +173,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   navButtonActive: {
     background: 'rgba(255, 255, 255, 0.05)',
-    border: '2px solid #74D0F1',
+    border: '2px solid var(--glass-border-focus)',
     borderRadius: '12px',
     color: '#74D0F1',
     textTransform: 'uppercase'

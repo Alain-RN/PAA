@@ -50,62 +50,6 @@ export const Dashboard: React.FC = () => {
 
       {/* IA Recommendation Widget - CRITICAL FOR DEFENSE DEMO */}
       <div style={styles.section}>
-        <GlassCard style={styles.recommendationCard}>
-          <div style={styles.recommendationHeader}>
-            <div style={styles.iaIcon}>
-              <Brain size={24} color="#fff" />
-            </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Conseil Pédagogique de l'IA Locale</h3>
-                <span style={styles.iaTag}>Ollama offline</span>
-              </div>
-              <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)' }}>
-                Analyse comportementale en temps réel
-              </p>
-            </div>
-          </div>
-
-          <div style={styles.recommendationBody}>
-            {recommendation ? (
-              <>
-                <p style={styles.recommendationText}>
-                  💡 <strong>Recommandation :</strong> {recommendation.reason}
-                </p>
-                <div style={styles.recommendationBox}>
-                  <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
-                    {recommendation.course.title}
-                  </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                    Chapitre : {recommendation.chapter.title}
-                  </div>
-                </div>
-                <button
-                  onClick={() => navigate(`/lesson/${recommendation.course.id}/${recommendation.chapter.id}`)}
-                  className="btn btn-primary"
-                  style={{ marginTop: '1rem' }}
-                >
-                  <span>Réviser le chapitre recommandé</span>
-                  <ArrowRight size={16} />
-                </button>
-              </>
-            ) : (
-              <>
-                <p style={styles.recommendationText}>
-                  ✨ <strong>Recommandation :</strong> Excellent travail ! Votre progression montre une excellente assimilation des bases de données. L'IA vous conseille de continuer sur la lancée en découvrant les concepts de React.
-                </p>
-                <button
-                  onClick={() => navigate('/course/c2')}
-                  className="btn btn-primary"
-                  style={{ marginTop: '1rem' }}
-                >
-                  <span>Démarrer le cours React</span>
-                  <ArrowRight size={16} />
-                </button>
-              </>
-            )}
-          </div>
-        </GlassCard>
       </div>
 
       {/* Grid Stats & Course List */}
@@ -148,7 +92,7 @@ export const Dashboard: React.FC = () => {
                     <ProgressBar progress={progress} showPercentage label="Progression" />
                   </div>
                   
-                  <div className="flex-between" style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--glass-border)' }}>
+                  <div className="flex-between" style={{ marginTop: '1.25rem', paddingTop: '1rem' }}>
                     <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                       {completedCount} sur {course.chapters.length} chapitres terminés
                     </span>
@@ -264,9 +208,7 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: '1.5rem',
   },
   recommendationCard: {
-    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.08) 100%)',
-    border: '1px solid rgba(99, 102, 241, 0.25)',
-    boxShadow: '0 8px 32px 0 rgba(99, 102, 241, 0.15)',
+    border: "none"
   },
   recommendationHeader: {
     display: 'flex',

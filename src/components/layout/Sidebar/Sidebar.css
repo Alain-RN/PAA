@@ -3,5 +3,7 @@
 }
 
 .btn-sidebar:hover {
-  background: #202f3684;
+  background: var(--glass-bg);
+  
 }
+
