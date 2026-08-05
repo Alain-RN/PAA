@@ -10,8 +10,8 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div>
       <div style={styles.header}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Console d'Administration</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>
+        <h1 className="font-heading" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Console d'Administration</h1>
+        <p className="font-body" style={{ color: 'var(--text-secondary)' }}>
           Suivi en temps réel des statistiques d'apprentissage, d'activité et des performances étudiantes.
         </p>
       </div>
@@ -23,7 +23,7 @@ export const AdminDashboard: React.FC = () => {
             <span style={styles.kpiTitle}>Étudiants inscrits</span>
             <Users size={20} color="var(--accent-primary)" />
           </div>
-          <div style={styles.kpiValue}>{analytics.totalUsers}</div>
+          <div className="font-xp" style={styles.kpiValue}>{analytics.totalUsers}</div>
           <div style={styles.kpiSub}>+2 cette semaine</div>
         </GlassCard>
 
@@ -32,7 +32,7 @@ export const AdminDashboard: React.FC = () => {
             <span style={styles.kpiTitle}>Actifs aujourd'hui</span>
             <Activity size={20} color="var(--accent-success)" />
           </div>
-          <div style={styles.kpiValue}>{analytics.activeUsersToday}</div>
+          <div className="font-xp" style={styles.kpiValue}>{analytics.activeUsersToday}</div>
           <div style={styles.kpiSub}>~70% de la promo</div>
         </GlassCard>
 
@@ -41,7 +41,7 @@ export const AdminDashboard: React.FC = () => {
             <span style={styles.kpiTitle}>Temps moyen / jour</span>
             <Clock size={20} color="var(--accent-warning)" />
           </div>
-          <div style={styles.kpiValue}>{analytics.averageTimeSpent} min</div>
+          <div className="font-xp" style={styles.kpiValue}>{analytics.averageTimeSpent} min</div>
           <div style={styles.kpiSub}>+4 min vs mois dernier</div>
         </GlassCard>
 
@@ -50,7 +50,7 @@ export const AdminDashboard: React.FC = () => {
             <span style={styles.kpiTitle}>Taux de réussite quiz</span>
             <Percent size={20} color="var(--accent-secondary)" />
           </div>
-          <div style={styles.kpiValue}>{analytics.averageSuccessRate}%</div>
+          <div className="font-xp" style={styles.kpiValue}>{analytics.averageSuccessRate}%</div>
           <div style={styles.kpiSub}>Moyenne sur les évaluations</div>
         </GlassCard>
       </div>
@@ -59,7 +59,7 @@ export const AdminDashboard: React.FC = () => {
       <div style={styles.chartsGrid}>
         {/* Registration trend line chart */}
         <GlassCard style={{ gridColumn: 'span 2' }}>
-          <h3 style={styles.chartTitle}>
+          <h3 className="font-heading" style={styles.chartTitle}>
             <TrendingUp size={16} color="var(--accent-primary)" />
             <span>Évolution des Inscriptions (Journalier)</span>
           </h3>
@@ -70,7 +70,7 @@ export const AdminDashboard: React.FC = () => {
 
         {/* Popular courses bar chart */}
         <GlassCard>
-          <h3 style={styles.chartTitle}>
+          <h3 className="font-heading" style={styles.chartTitle}>
             <BarChart2 size={16} color="var(--accent-success)" />
             <span>Répartition des étudiants par cours</span>
           </h3>
@@ -81,7 +81,7 @@ export const AdminDashboard: React.FC = () => {
 
         {/* Success rates donut chart */}
         <GlassCard>
-          <h3 style={styles.chartTitle}>
+          <h3 className="font-heading" style={styles.chartTitle}>
             <FilePieChart size={16} color="var(--accent-secondary)" />
             <span>Taux de réussite moyen par catégorie</span>
           </h3>

@@ -38,8 +38,8 @@ export const HistoryPage: React.FC = () => {
   return (
     <div>
       <div style={styles.header}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Journal d'Historique</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>
+        <h1 className="font-heading" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Journal d'Historique</h1>
+        <p className="font-body" style={{ color: 'var(--text-secondary)' }}>
           Consultez la traçabilité complète de vos efforts pédagogiques et gains d'XP récents.
         </p>
       </div>
@@ -47,7 +47,7 @@ export const HistoryPage: React.FC = () => {
       <GlassCard>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
           <History size={18} color="var(--accent-primary)" />
-          <h3 style={{ fontSize: '1.1rem' }}>Historique d'activité persistant</h3>
+          <h3 className="font-heading" style={{ fontSize: '1.1rem' }}>Historique d'activité persistant</h3>
         </div>
 
         {historyLogs.length === 0 ? (
@@ -82,7 +82,7 @@ export const HistoryPage: React.FC = () => {
                         color: log.xpGained > 0 ? 'var(--accent-success)' : 'var(--text-muted)',
                       }}
                     >
-                      {log.xpGained > 0 ? `+${log.xpGained} XP` : '--'}
+                      <span className="font-xp">{log.xpGained > 0 ? `+${log.xpGained} XP` : '--'}</span>
                     </td>
                   </tr>
                 ))}

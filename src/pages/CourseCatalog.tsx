@@ -14,8 +14,8 @@ export const CourseCatalog: React.FC = () => {
   return (
     <div>
       <div style={styles.header}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Catalogue des Cours</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>
+        <h1 className="font-heading" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Catalogue des Cours</h1>
+        <p className="font-body" style={{ color: 'var(--text-secondary)' }}>
           Explorez nos parcours d'apprentissage adaptatifs. L'IA adapte l'évaluation et vous recommande des révisions.
         </p>
       </div>
@@ -54,8 +54,8 @@ export const CourseCatalog: React.FC = () => {
                 </span>
               </div>
 
-              <h2 style={styles.title}>{course.title}</h2>
-              <p style={styles.description}>{course.description}</p>
+              <h2 className="font-heading" style={styles.title}>{course.title}</h2>
+              <p className="font-body" style={styles.description}>{course.description}</p>
 
               <div style={styles.stats}>
                 <div style={styles.statItem}>

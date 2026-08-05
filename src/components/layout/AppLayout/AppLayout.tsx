@@ -1,19 +1,28 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../Sidebar';
+import { RightSidebar } from '../RightSidebar';
 import './AppLayout.css';
 
 /**
- * AppLayout — Shell layout for authenticated pages.
- * Renders the fixed Sidebar on the left and the routed page content (Outlet) on the right.
+ * AppLayout — Layout avec Sidebar gauche fixe et ensemble (Outlet + RightSidebar) centré.
  */
 const AppLayout: React.FC = () => {
   return (
     <div className="app-layout">
+      {/* Sidebar gauche fixe */}
       <Sidebar />
-      <main className="app-layout__main">
-        <Outlet />
-      </main>
+
+      {/* Zone globale centrée */}
+      <div className="app-layout__wrapper">
+        {/* Conteneur duo (Outlet + RightSidebar) collé & centré */}
+        <div className="app-layout__container">
+          <main className="app-layout__main">
+            <Outlet />
+          </main>
+          <RightSidebar />
+        </div>
+      </div>
     </div>
   );
 };

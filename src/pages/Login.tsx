@@ -51,10 +51,10 @@ export const Login: React.FC = () => {
           <div style={styles.logoIcon}>
             <Cpu size={32} color="var(--accent-primary)" />
           </div>
-          <h1 style={styles.title}>
+          <h1 className="font-heading" style={styles.title}>
             AdaptLearn<span style={{ color: 'var(--accent-primary)' }}>.ia</span>
           </h1>
-          <p style={styles.subtitle}>
+          <p className="font-body" style={styles.subtitle}>
             Plateforme d'apprentissage adaptative & gamifiée pour Licence Informatique
           </p>
         </div>
@@ -200,7 +200,6 @@ const styles: Record<string, React.CSSProperties> = {
   title: {
     fontSize: '2rem',
     marginBottom: '0.5rem',
-    fontFamily: 'var(--font-heading)',
   },
   subtitle: {
     color: 'var(--text-secondary)',

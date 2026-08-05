@@ -44,7 +44,9 @@ export const Sidebar: React.FC = () => {
   return (
     <aside style={styles.sidebar}>
       <div style={styles.logoContainer}>
-        <img style={{ width: "190px", height: "40px", marginLeft: "15px" }} src="/mallowotter-text-removebg.png" alt="" />
+        <a href="" style={{ color: '#49c0f8', fontSize: '30px', letterSpacing: "0.02em", fontWeight: '900', textDecoration: 'none', marginLeft: "0.9rem", marginTop: "8px" }}>
+          Malloow
+        </a>
       </div>
       <nav style={styles.nav}>
         {navItems.map((item) => {
@@ -98,7 +100,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     gap: '0.75rem',
-    marginBottom: '2rem',
+    marginBottom: '1.4rem',
   },
   logoIcon: {
     background: 'rgba(99, 102, 241, 0.1)',
@@ -164,9 +166,7 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     textAlign: 'left',
     width: '100%',
-    fontFamily: 'var(--font-primary)',
-    fontSize: '15px',
-    fontWeight: '700',
+    fontSize: '0.9rem',
     position: 'relative',
     transition: 'var(--transition-smooth)',
     textTransform: 'uppercase'

@@ -1,11 +1,10 @@
-/*
- * Design Tokens — AdaptLearn.ia
- * Toutes les variables CSS de l'application. Modifiez ici pour personnaliser le thème.
- */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 
 :root {
+  --font-heading: 'Nunito', sans-serif;  /* weight 900 */
+  --font-ui:      'Nunito', sans-serif;  /* weight 700-800 */
+  --font-body:    'Nunito', sans-serif;  /* weight 400-600 */
+
 
   --bg-mode: #0B1A24;
 

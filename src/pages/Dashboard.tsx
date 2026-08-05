@@ -1,326 +1,279 @@
 import React from 'react';
 import { useAppState } from '../hooks/useAppState';
-import { useAI } from '../hooks/useAI';
 import { useNavigate } from 'react-router-dom';
 import { GlassCard } from '../components/GlassCard';
 import { ProgressBar } from '../components/ProgressBar';
-import { Brain, ArrowRight, Flame, Award, BookOpen, Clock } from 'lucide-react';
+import { Flame, Award, BookOpen, ChevronRight, TrendingUp, Star } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
   const { currentUser, courses } = useAppState();
-  const { recommendation } = useAI();
   const navigate = useNavigate();
 
   if (!currentUser) return null;
 
-  // Compute stats
   const totalChapters = courses.reduce((acc, c) => acc + c.chapters.length, 0);
   const completedChaptersCount = currentUser.completedChapters.length;
-  const progressRatio = (completedChaptersCount / (totalChapters || 1)) * 100;
+  const progressRatio = Math.round((completedChaptersCount / (totalChapters || 1)) * 100);
+
+  const difficultyConfig = {
+    'Débutant':     { bg: 'rgba(16,185,129,0.12)', color: 'var(--accent-success)' },
+    'Intermédiaire':{ bg: 'rgba(245,158,11,0.12)', color: 'var(--accent-warning)' },
+    'Avancé':       { bg: 'rgba(239,68,68,0.12)',  color: 'var(--accent-danger)'  },
+  } as const;
 
   return (
-    <div>
-      {/* Top Banner */}
+    <div style={styles.page}>
+
+      {/* ── HEADER ── */}
       <div style={styles.header}>
         <div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>
-            Ravi de vous revoir, {currentUser.name} ! 👋
+          <h1 className="font-heading" style={styles.title}>
+            Bonjour, {currentUser.name.split(' ')[0]} 👋
           </h1>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            Prêt à poursuivre vos défis d'apprentissage aujourd'hui ?
+          <p className="font-body" style={styles.subtitle}>
+            Continuez là où vous vous êtes arrêté.
           </p>
         </div>
-        <div style={styles.headerStats}>
-          <div style={styles.headerStatItem}>
-            <Flame size={20} color="var(--accent-warning)" fill="var(--accent-warning)" />
-            <div>
-              <div style={styles.statValue}>{currentUser.streak} jours</div>
-              <div style={styles.statLabel}>Série active</div>
-            </div>
-          </div>
-          <div style={styles.headerStatItem}>
-            <Award size={20} color="var(--accent-secondary)" />
-            <div>
-              <div style={styles.statValue}>{currentUser.badges.length} badges</div>
-              <div style={styles.statLabel}>Débloqués</div>
-            </div>
-          </div>
-        </div>
+
       </div>
 
-      {/* IA Recommendation Widget - CRITICAL FOR DEFENSE DEMO */}
-      <div style={styles.section}>
+      {/* ── SECTION TITRE ── */}
+      <div style={styles.sectionHeader}>
+        <BookOpen size={18} color="var(--accent-primary)" />
+        <h2 className="font-heading" style={styles.sectionTitle}>Mes cours</h2>
       </div>
 
-      {/* Grid Stats & Course List */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '1.5rem', marginTop: '1.5rem' }}>
-        
-        {/* Left Column: My Current Courses */}
-        <div>
-          <h2 style={{ fontSize: '1.3rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <BookOpen size={20} color="var(--accent-primary)" />
-            <span>Mes cours en cours</span>
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {courses.map((course) => {
-              const courseChapterIds = course.chapters.map(ch => ch.id);
-              const completedCount = courseChapterIds.filter(id => currentUser.completedChapters.includes(id)).length;
-              const progress = Math.round((completedCount / courseChapterIds.length) * 100);
+      {/* ── COURSE CARDS ── */}
+      <div style={styles.courseList}>
+        {courses.map((course) => {
+          const ids = course.chapters.map(ch => ch.id);
+          const done = ids.filter(id => currentUser.completedChapters.includes(id)).length;
+          const progress = Math.round((done / ids.length) * 100);
+          const diff = difficultyConfig[course.difficulty as keyof typeof difficultyConfig]
+            ?? { bg: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' };
 
+          return (
+            <GlassCard key={course.id} style={styles.courseCard}>
+              {/* Left: info */}
+              <div style={styles.courseLeft}>
+                <div style={styles.courseTopRow}>
+                  <span style={{ ...styles.categoryTag }}>
+                    {course.category}
+                  </span>
+                  <span style={{ ...styles.diffTag, background: diff.bg, color: diff.color }}>
+                    {course.difficulty}
+                  </span>
+                </div>
+                <h3 className="font-heading" style={styles.courseTitle}>{course.title}</h3>
+                <div style={styles.courseProgress}>
+                  <ProgressBar progress={progress} showPercentage label={`${done}/${ids.length} chapitres`} />
+                </div>
+              </div>
+
+              {/* Right: CTA */}
+              <button
+                onClick={() => navigate(`/course/${course.id}`)}
+                className="btn btn-primary"
+                style={styles.courseBtn}
+              >
+                {progress > 0 ? 'Continuer' : 'Démarrer'}
+                <ChevronRight size={16} />
+              </button>
+            </GlassCard>
+          );
+        })}
+      </div>
+
+      {/* ── ACTIVITÉ RÉCENTE ── */}
+      {currentUser.completedChapters.length > 0 && (
+        <div style={{ marginTop: '2rem' }}>
+          <div style={styles.sectionHeader}>
+            <Star size={18} color="var(--accent-warning)" />
+            <h2 className="font-heading" style={styles.sectionTitle}>Activité récente</h2>
+            <button onClick={() => navigate('/history')} style={styles.linkBtn}>
+              Tout voir →
+            </button>
+          </div>
+
+          <div style={styles.activityRow}>
+            {currentUser.completedChapters.slice(-4).reverse().map((chId, idx) => {
+              const chapterNames: Record<string, string> = {
+                c1_ch1: 'Introduction aux SGBDR',
+                c1_ch2: 'Sélection des données',
+                c1_ch3: 'Jointures & Agrégats',
+              };
               return (
-                <GlassCard key={course.id} style={styles.courseCard}>
-                  <div className="flex-between mb-1">
-                    <span style={styles.courseCategory}>{course.category}</span>
-                    <span style={{
-                      ...styles.courseDifficulty,
-                      backgroundColor: 
-                        course.difficulty === 'Débutant' ? 'rgba(16, 185, 129, 0.15)' : 
-                        course.difficulty === 'Intermédiaire' ? 'rgba(245, 158, 11, 0.15)' : 
-                        'rgba(239, 68, 68, 0.15)',
-                      color:
-                        course.difficulty === 'Débutant' ? 'var(--accent-success)' : 
-                        course.difficulty === 'Intermédiaire' ? 'var(--accent-warning)' : 
-                        'var(--accent-danger)'
-                    }}>
-                      {course.difficulty}
-                    </span>
+                <div key={idx} style={styles.activityChip}>
+                  <div style={styles.activityDot} />
+                  <div>
+                    <div style={styles.activityName}>
+                      {chapterNames[chId] ?? 'Chapitre validé'}
+                    </div>
+                    <div className="font-xp" style={styles.activityXp}>+30 XP</div>
                   </div>
-                  <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>{course.title}</h3>
-                  <p style={styles.courseDesc}>{course.description}</p>
-                  
-                  <div style={{ marginTop: '1.5rem' }}>
-                    <ProgressBar progress={progress} showPercentage label="Progression" />
-                  </div>
-                  
-                  <div className="flex-between" style={{ marginTop: '1.25rem', paddingTop: '1rem' }}>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      {completedCount} sur {course.chapters.length} chapitres terminés
-                    </span>
-                    <button
-                      onClick={() => navigate(`/course/${course.id}`)}
-                      className="btn btn-secondary"
-                      style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}
-                    >
-                      Voir le cours
-                    </button>
-                  </div>
-                </GlassCard>
+                </div>
               );
             })}
           </div>
         </div>
-
-        {/* Right Column: Mini Stats and Quick Logs */}
-        <div>
-          <h2 style={{ fontSize: '1.3rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Clock size={20} color="var(--accent-secondary)" />
-            <span>Vue globale</span>
-          </h2>
-          <GlassCard style={{ marginBottom: '1rem' }}>
-            <h3 style={{ fontSize: '1rem', marginBottom: '1rem', color: 'var(--text-secondary)' }}>
-              Progression globale académique
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <ProgressBar progress={progressRatio} showPercentage label="Chapitres validés" />
-              </div>
-              <div style={styles.miniStatGrid}>
-                <div style={styles.miniStatCard}>
-                  <div style={styles.miniStatVal}>{completedChaptersCount}</div>
-                  <div style={styles.miniStatLbl}>Chapitres</div>
-                </div>
-                <div style={styles.miniStatCard}>
-                  <div style={styles.miniStatVal}>{currentUser.completedCourses.length}</div>
-                  <div style={styles.miniStatLbl}>Diplômes</div>
-                </div>
-              </div>
-            </div>
-          </GlassCard>
-
-          <GlassCard>
-            <div className="flex-between mb-1">
-              <h3 style={{ fontSize: '1rem', color: 'var(--text-secondary)' }}>Activité récente</h3>
-              <button onClick={() => navigate('/history')} style={styles.seeAllBtn}>
-                Tout voir
-              </button>
-            </div>
-            
-            <div style={styles.miniLogsList}>
-              {currentUser.completedChapters.slice(-3).reverse().map((chId, idx) => (
-                <div key={idx} style={styles.miniLogItem}>
-                  <div style={styles.miniLogIndicator} />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '0.8rem', fontWeight: 600 }}>Chapitre validé</div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
-                      {chId === 'c1_ch1' ? 'Introduction aux SGBDR' : chId === 'c1_ch2' ? 'Sélection des données' : 'Chapitre validé'}
-                    </div>
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--accent-success)', fontWeight: 'bold' }}>
-                    +30 XP
-                  </div>
-                </div>
-              ))}
-              {currentUser.completedChapters.length === 0 && (
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center', padding: '1rem' }}>
-                  Aucune activité récente. Démarrer un cours pour commencer !
-                </p>
-              )}
-            </div>
-          </GlassCard>
-        </div>
-
-      </div>
+      )}
     </div>
   );
 };
 
 const styles: Record<string, React.CSSProperties> = {
+  page: {
+    width: '100%',
+  },
+
+  /* Header */
   header: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '2rem',
+    alignItems: 'flex-start',
     flexWrap: 'wrap',
-    gap: '1rem',
+    gap: '1.25rem',
+    marginBottom: '2rem',
   },
-  headerStats: {
-    display: 'flex',
-    gap: '1.5rem',
+  title: {
+    fontSize: '1.9rem',
+    marginBottom: '0.2rem',
   },
-  headerStatItem: {
-    background: 'rgba(255, 255, 255, 0.03)',
-    border: '1px solid var(--glass-border)',
-    borderRadius: 'var(--border-radius-md)',
-    padding: '0.75rem 1.25rem',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.75rem',
-  },
-  statValue: {
-    fontSize: '1rem',
-    fontWeight: 700,
-  },
-  statLabel: {
-    fontSize: '0.75rem',
+  subtitle: {
     color: 'var(--text-secondary)',
-  },
-  section: {
-    marginBottom: '1.5rem',
-  },
-  recommendationCard: {
-    border: "none"
-  },
-  recommendationHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1rem',
-    marginBottom: '1.25rem',
-  },
-  iaIcon: {
-    width: '44px',
-    height: '44px',
-    borderRadius: '12px',
-    background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 0 15px rgba(99, 102, 241, 0.4)',
-  },
-  iaTag: {
-    background: 'rgba(255,255,255,0.08)',
-    border: '1px solid rgba(255,255,255,0.15)',
-    borderRadius: '4px',
-    padding: '0.1rem 0.4rem',
-    fontSize: '0.65rem',
-    fontWeight: 600,
-    textTransform: 'uppercase',
-    color: 'rgba(255,255,255,0.8)',
-  },
-  recommendationBody: {
-    paddingLeft: '0.5rem',
-  },
-  recommendationText: {
     fontSize: '0.95rem',
-    lineHeight: '1.5',
-    color: 'var(--text-primary)',
-    marginBottom: '1rem',
   },
-  recommendationBox: {
-    background: 'rgba(0, 0, 0, 0.25)',
-    border: '1px solid var(--glass-border)',
-    borderRadius: 'var(--border-radius-sm)',
-    padding: '0.75rem 1rem',
-    maxWidth: '500px',
-  },
-  courseCard: {
-    padding: '1.5rem',
-  },
-  courseCategory: {
-    fontSize: '0.75rem',
-    fontWeight: 600,
-    textTransform: 'uppercase',
-    color: 'var(--accent-primary)',
-    letterSpacing: '0.05em',
-  },
-  courseDifficulty: {
-    fontSize: '0.75rem',
-    fontWeight: 600,
-    padding: '0.2rem 0.5rem',
-    borderRadius: '6px',
-  },
-  courseDesc: {
-    fontSize: '0.85rem',
-    color: 'var(--text-secondary)',
-    lineHeight: '1.4',
-    marginBottom: '1rem',
-  },
-  miniStatGrid: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+
+  /* Stat pills */
+  pills: {
+    display: 'flex',
     gap: '0.75rem',
-    marginTop: '0.5rem',
+    flexWrap: 'wrap',
   },
-  miniStatCard: {
-    background: 'rgba(0,0,0,0.15)',
+  pill: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.4rem',
+    background: 'rgba(255,255,255,0.04)',
     border: '1px solid var(--glass-border)',
-    borderRadius: 'var(--border-radius-sm)',
-    padding: '0.5rem',
-    textAlign: 'center',
+    borderRadius: '999px',
+    padding: '0.45rem 1rem',
   },
-  miniStatVal: {
+  pillValue: {
+    fontWeight: 700,
+    fontSize: '0.95rem',
+  },
+  pillLabel: {
+    fontSize: '0.78rem',
+    color: 'var(--text-secondary)',
+  },
+
+  /* Section header */
+  sectionHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    marginBottom: '0.85rem',
+  },
+  sectionTitle: {
     fontSize: '1.1rem',
-    fontWeight: 'bold',
+    flex: 1,
   },
-  miniStatLbl: {
-    fontSize: '0.7rem',
-    color: 'var(--text-muted)',
-  },
-  seeAllBtn: {
+  linkBtn: {
     background: 'transparent',
     border: 'none',
     color: 'var(--accent-primary)',
-    fontSize: '0.8rem',
+    fontSize: '0.82rem',
     cursor: 'pointer',
     fontWeight: 500,
   },
-  miniLogsList: {
+
+  /* Course cards */
+  courseList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.75rem',
+    gap: '0.85rem',
   },
-  miniLogItem: {
+  courseCard: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75rem',
-    padding: '0.5rem 0',
-    borderBottom: '1px solid rgba(255,255,255,0.03)',
+    gap: '1.5rem',
+    padding: '1.1rem 1.25rem',
   },
-  miniLogIndicator: {
-    width: '6px',
-    height: '6px',
+  courseLeft: {
+    flex: 1,
+    minWidth: 0,
+  },
+  courseTopRow: {
+    display: 'flex',
+    gap: '0.5rem',
+    marginBottom: '0.4rem',
+  },
+  categoryTag: {
+    fontSize: '0.7rem',
+    fontWeight: 600,
+    textTransform: 'uppercase' as const,
+    color: 'var(--accent-primary)',
+    letterSpacing: '0.05em',
+  },
+  diffTag: {
+    fontSize: '0.7rem',
+    fontWeight: 600,
+    padding: '0.1rem 0.45rem',
+    borderRadius: '5px',
+  },
+  courseTitle: {
+    fontSize: '1rem',
+    marginBottom: '0.6rem',
+    whiteSpace: 'nowrap' as const,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+  courseProgress: {
+    maxWidth: '420px',
+  },
+  courseBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.3rem',
+    flexShrink: 0,
+    padding: '0.5rem 1rem',
+    fontSize: '0.82rem',
+  },
+
+  /* Activity */
+  activityRow: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))',
+    gap: '0.75rem',
+  },
+  activityChip: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '0.6rem',
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid var(--glass-border)',
+    borderRadius: '10px',
+    padding: '0.75rem',
+  },
+  activityDot: {
+    width: '8px',
+    height: '8px',
     borderRadius: '50%',
     backgroundColor: 'var(--accent-primary)',
     boxShadow: '0 0 6px var(--accent-primary)',
+    marginTop: '4px',
+    flexShrink: 0,
+  },
+  activityName: {
+    fontSize: '0.82rem',
+    fontWeight: 500,
+    marginBottom: '0.2rem',
+    color: 'var(--text-primary)',
+  },
+  activityXp: {
+    fontSize: '0.75rem',
+    color: 'var(--accent-success)',
   },
 };
 

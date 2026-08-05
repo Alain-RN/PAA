@@ -1,28 +1,79 @@
 /*
- * AppLayout — Sidebar + Outlet shell
+ * AppLayout — Layout fluide avec dégradés de scroll fading (Scroll indicators)
  */
 
 .app-layout {
   display: flex;
-  min-height: 100vh;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   background-color: var(--bg-mode);
+  overflow: hidden;
 }
 
-.app-layout__main {
+.app-layout__wrapper {
+  margin-left: var(--sidebar-width);
   flex: 1;
   display: flex;
-  flex-direction: column;
-  margin-left: var(--sidebar-width);
-  min-height: 100vh;
-  padding: var(--space-8);
+  justify-content: center;
+  align-items: stretch;
+  height: 100vh;
+  width: calc(100% - var(--sidebar-width));
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.app-layout__container {
+  display: flex;
+  width: 100%;
+  max-width: 1280px;
+  height: 100vh;
+  position: relative;
+  align-items: stretch;
+}
+
+/* Zone principale de contenu avec dégradé indicateur de scroll (Mask Fading) */
+.app-layout__main {
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
   overflow-y: auto;
+  padding: var(--space-8);
+  box-sizing: border-box;
+  
+  /* Effet visuel élégant : le bas de la page s'estompe pour indiquer subtilement qu'il y a du contenu à scroller */
+  mask-image: linear-gradient(to bottom, black 94%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 94%, transparent 100%);
+}
+
+@media (max-width: 1280px) {
+  .app-layout__main {
+    padding: var(--space-6);
+  }
 }
 
 @media (max-width: 1024px) {
-  .app-layout__main {
+  .app-layout {
+    overflow: auto;
+  }
+
+  .app-layout__wrapper {
     margin-left: 0;
-    padding: var(--space-6);
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  
+  .app-layout__container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .app-layout__main {
+    height: auto;
+    overflow-y: visible;
+    padding: var(--space-4);
     padding-top: 5rem;
+    mask-image: none;
+    -webkit-mask-image: none;
   }
 }

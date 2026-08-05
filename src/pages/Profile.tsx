@@ -43,8 +43,8 @@ export const Profile: React.FC = () => {
   return (
     <div>
       <div style={styles.header}>
-        <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Mon Profil Étudiant</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>
+        <h1 className="font-heading" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Mon Profil Étudiant</h1>
+        <p className="font-body" style={{ color: 'var(--text-secondary)' }}>
           Gérez votre profil, suivez vos statistiques académiques et admirez vos badges de réussite.
         </p>
       </div>
@@ -58,7 +58,7 @@ export const Profile: React.FC = () => {
               {currentUser.name.split(' ').map(n => n[0]).join('')}
             </div>
             
-            <h2 style={{ fontSize: '1.3rem', marginBottom: '0.25rem' }}>{currentUser.name}</h2>
+            <h2 className="font-heading" style={{ fontSize: '1.3rem', marginBottom: '0.25rem' }}>{currentUser.name}</h2>
             <div style={styles.roleTag}>Étudiant</div>
             
             <div style={styles.detailsList}>
@@ -79,17 +79,17 @@ export const Profile: React.FC = () => {
 
           {/* Stats Summary Card */}
           <GlassCard>
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '1.25rem' }}>Statistiques d'apprentissage</h3>
+            <h3 className="font-heading" style={{ fontSize: '1.1rem', marginBottom: '1.25rem' }}>Statistiques d'apprentissage</h3>
             <div style={styles.statsGrid}>
               <div style={styles.statBox}>
                 <Flame size={20} color="var(--accent-warning)" fill="var(--accent-warning)" />
-                <div style={styles.statVal}>{currentUser.streak} jours</div>
+                <div className="streak-count" style={styles.statVal}>{currentUser.streak} jours</div>
                 <div style={styles.statLbl}>Série actuelle</div>
               </div>
 
               <div style={styles.statBox}>
                 <BookOpen size={20} color="var(--accent-primary)" />
-                <div style={styles.statVal}>
+                <div className="font-xp" style={styles.statVal}>
                   {currentUser.completedChapters.length} / {totalChapters}
                 </div>
                 <div style={styles.statLbl}>Leçons lues</div>
@@ -97,7 +97,7 @@ export const Profile: React.FC = () => {
 
               <div style={styles.statBox}>
                 <CheckSquare size={20} color="var(--accent-success)" />
-                <div style={styles.statVal}>
+                <div className="font-xp" style={styles.statVal}>
                   {currentUser.completedChapters.length}
                 </div>
                 <div style={styles.statLbl}>Quiz réussis</div>
@@ -105,7 +105,7 @@ export const Profile: React.FC = () => {
 
               <div style={styles.statBox}>
                 <Award size={20} color="var(--accent-secondary)" />
-                <div style={styles.statVal}>{currentUser.badges.length}</div>
+                <div className="font-xp" style={styles.statVal}>{currentUser.badges.length}</div>
                 <div style={styles.statLbl}>Badges obtenus</div>
               </div>
             </div>
@@ -115,8 +115,8 @@ export const Profile: React.FC = () => {
         {/* Right Column: Badges Gallery */}
         <div style={{ flex: 1.1 }}>
           <GlassCard style={{ height: '100%' }}>
-            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.25rem' }}>Galerie des Badges</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>
+            <h3 className="font-heading" style={{ fontSize: '1.2rem', marginBottom: '0.25rem' }}>Galerie des Badges</h3>
+            <p className="font-body" style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '1.5rem' }}>
               Relevez des défis de cours, de streaks ou de niveau pour débloquer ces succès.
             </p>
 
@@ -144,8 +144,8 @@ export const Profile: React.FC = () => {
                       )}
                     </div>
                     
-                    <h4 style={styles.badgeName}>{badge.name}</h4>
-                    <p style={styles.badgeDesc}>{badge.description}</p>
+                    <h4 className="font-heading" style={styles.badgeName}>{badge.name}</h4>
+                    <p className="font-body" style={styles.badgeDesc}>{badge.description}</p>
                     
                     {isEarned && (
                       <span style={styles.earnedAtLabel}>

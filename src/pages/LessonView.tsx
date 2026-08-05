@@ -64,7 +64,7 @@ export const LessonView: React.FC = () => {
 
       <div style={styles.header}>
         <span style={styles.category}>{course.title}</span>
-        <h1 style={{ fontSize: '1.8rem', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+        <h1 className="font-heading" style={{ fontSize: '1.8rem', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
           {chapter.title}
         </h1>
       </div>
@@ -90,7 +90,7 @@ export const LessonView: React.FC = () => {
                   );
                 }
                 return (
-                  <p key={idx} style={{ marginBottom: '1.25rem', lineHeight: '1.6', fontSize: '0.95rem' }}>
+                  <p className="font-body" key={idx} style={{ marginBottom: '1.25rem', lineHeight: '1.6', fontSize: '0.95rem' }}>
                     {paragraph}
                   </p>
                 );
@@ -130,12 +130,12 @@ export const LessonView: React.FC = () => {
                 <Brain size={18} color="#fff" />
               </div>
               <div>
-                <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>Assistant IA Ollama</div>
+                <div className="font-ui" style={{ fontWeight: 700, fontSize: '0.95rem' }}>Assistant IA Ollama</div>
                 <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Mistral-7B local offline</div>
               </div>
             </div>
 
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: '1.4' }}>
+            <p className="font-body" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: '1.4' }}>
               Générez un résumé instantané de ce cours exécuté localement sur votre machine sans connexion internet.
             </p>
 

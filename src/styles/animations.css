@@ -2,6 +2,12 @@
  * Animations & Keyframes — AdaptLearn.ia
  */
 
+/* ─── Bounce (crown float on leaderboard) ─── */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-7px); }
+}
+
 /* ─── Pulse (Ollama status dot) ─── */
 @keyframes pulse {
   0% {
