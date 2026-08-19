@@ -8,21 +8,18 @@
 
   --bg-mode: #0B1A24;
 
-  /* ─── Typography ─── */
-  --font-primary: 'Inter', sans-serif;
-  --font-heading: 'Outfit', sans-serif;
-
   /* ─── Background ─── */
   --bg-primary: #090d16;
   --bg-secondary: #0f172a;
 
   /* ─── Glassmorphism ─── */
   --glass-bg: rgba(15, 23, 42, 0.008);
-  --glass-border: rgba(255, 255, 255, 0.243);
+  --glass-border: rgba(255, 255, 255, 0.155);
   --glass-border-focus: #3f85a7;
   --glass-glow: rgba(99, 102, 241, 0.15);
 
   /* ─── Accent Colors ─── */
+  --accent-gray: rgb(156, 156, 156);
   --accent-primary: #49c0f8;          
   --accent-primary-glow: rgba(99, 102, 241, 0.3);
   --accent-secondary: #a855f7;         /* Purple */

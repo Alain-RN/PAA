@@ -22,13 +22,26 @@
 }
 
 .progress-percent {
-  color: var(--accent-primary);
+  position: relative;
   font-weight: 700;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  z-index: 200;
+  font-size: 12px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.progress-percent-warning {
+  color: white;
 }
 
 .progress-track {
   width: 100%;
-  background: rgba(255, 255, 255, 0.05);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.071);
   border-radius: var(--radius-full);
   overflow: hidden;
   position: relative;
@@ -40,10 +53,14 @@
 
 .progress-fill {
   height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
   border-radius: var(--radius-full);
   background: linear-gradient(90deg, var(--accent-primary));
-  box-shadow: 0 0 8px var(--accent-primary);
   transition: width 0.5s ease-out;
+
 }
 
 /* ─── Color variants ─── */

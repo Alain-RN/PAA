@@ -1,97 +1,258 @@
-import React from 'react';
-import { useAppState } from '../hooks/useAppState';
-import { useNavigate } from 'react-router-dom';
-import { GlassCard } from '../components/GlassCard';
-import { ProgressBar } from '../components/ProgressBar';
-import { BookOpen, Sparkles, Award } from 'lucide-react';
+import React, { useState } from "react";
+import { useAppState } from "../hooks/useAppState";
+import { useNavigate } from "react-router-dom";
+import { ProgressBar } from "../components/ProgressBar";
+import { Button } from "../components/ui/Button";
+import {
+  Sparkles,
+  ArrowRight,
+  CheckCircle2,
+  Wand2,
+  BookOpen,
+  Plus,
+  X,
+} from "lucide-react";
+import { generateCourseWithAI } from "../services/aiService";
+
+const inferCategoryFromTopic = (topic: string): string => {
+  const t = topic.toLowerCase();
+  if (
+    t.includes("anglais") ||
+    t.includes("espagnol") ||
+    t.includes("allemand") ||
+    t.includes("italien") ||
+    t.includes("langue") ||
+    t.includes("japonais") ||
+    t.includes("chinois") ||
+    t.includes("français") ||
+    t.includes("vocabulaire") ||
+    t.includes("grammaire")
+  ) {
+    return "Langues";
+  }
+  if (
+    t.includes("histoire") ||
+    t.includes("géographie") ||
+    t.includes("culture") ||
+    t.includes("art") ||
+    t.includes("philo") ||
+    t.includes("droit")
+  ) {
+    return "Culture & Histoire";
+  }
+  if (
+    t.includes("math") ||
+    t.includes("physique") ||
+    t.includes("chimie") ||
+    t.includes("biologie") ||
+    t.includes("science")
+  ) {
+    return "Sciences";
+  }
+  if (
+    t.includes("marketing") ||
+    t.includes("business") ||
+    t.includes("finance") ||
+    t.includes("management") ||
+    t.includes("économie")
+  ) {
+    return "Business & Management";
+  }
+  return "Informatique";
+};
 
 export const CourseCatalog: React.FC = () => {
-  const { currentUser, courses } = useAppState();
+  const { currentUser, courses, addCourse, addQuestionsForChapter } =
+    useAppState();
   const navigate = useNavigate();
+
+  const [topic, setTopic] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   if (!currentUser) return null;
 
+  const handleGenerateCourse = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!topic.trim() || isGenerating) return;
+
+    setIsGenerating(true);
+    setSuccessMessage(null);
+    setErrorMessage(null);
+
+    const inferredCategory = inferCategoryFromTopic(topic.trim());
+
+    try {
+      const result = await generateCourseWithAI({
+        title: topic.trim(),
+        category: inferredCategory,
+        difficulty: "Débutant",
+        nbChapters: 3,
+      });
+
+      addCourse(result.course);
+      Object.entries(result.questionsByChapter).forEach(
+        ([chapterId, questions]) => {
+          addQuestionsForChapter(chapterId, questions);
+        },
+      );
+
+      setSuccessMessage(
+        `Félicitations ! Le cours "${result.course.title}" a été créé avec succès.`,
+      );
+      setTopic("");
+    } catch {
+      setErrorMessage(
+        "Une erreur est survenue lors de la génération. Veuillez réessayer.",
+      );
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
-    <div>
-      <div style={styles.header}>
-        <h1 className="font-heading" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Catalogue des Cours</h1>
-        <p className="font-body" style={{ color: 'var(--text-secondary)' }}>
-          Explorez nos parcours d'apprentissage adaptatifs. L'IA adapte l'évaluation et vous recommande des révisions.
-        </p>
+    <div style={styles.container}>
+      {/* ── Page Header with Action Button ── */}
+      <div style={styles.headerRow}>
+        <div>
+          <h1 className="font-heading" style={{ fontSize: "2.1rem", margin: 0 }}>
+            Mes Cours
+          </h1>
+          <p
+            className="font-body"
+            style={{ color: "var(--text-secondary)", margin: "0.3rem 0 0 0" }}
+          >
+            Explorez vos cours ou créez un nouveau parcours d'apprentissage en un instant.
+          </p>
+        </div>
+
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => {
+            setIsFormOpen(!isFormOpen);
+            setSuccessMessage(null);
+            setErrorMessage(null);
+          }}
+          iconLeft={isFormOpen ? <X size={16} /> : <Plus size={16} />}
+        >
+          {isFormOpen ? "Masquer la création" : "Créer un cours avec l'IA"}
+        </Button>
       </div>
 
+      {/* ── Course Creation Section (Toggled by Button) ── */}
+      {isFormOpen && (
+        <div style={styles.createBoxContainer}>
+          <div style={styles.createHeader}>
+            <Wand2 size={24} color="var(--accent-primary)" />
+            <span style={styles.createTitle}>
+              Créer un nouveau cours personnalisé avec l'IA
+            </span>
+          </div>
+
+          <form onSubmit={handleGenerateCourse} style={styles.createForm}>
+            <textarea
+              style={styles.courseTextarea}
+              rows={5}
+              placeholder="Quel cours souhaitez-vous apprendre aujourd'hui ? (Ex: Anglais conversationnel pour voyager, Espagnol professionnel, Python pour débutants, Histoire contemporaine, Marketing digital...)"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              disabled={isGenerating}
+            />
+
+            <div style={styles.buttonRow}>
+              <Button
+                type="submit"
+                variant="primary"
+                size="sm"
+                disabled={isGenerating || !topic.trim()}
+                loading={isGenerating}
+                iconLeft={!isGenerating ? <Sparkles size={15} /> : undefined}
+              >
+                GÉNÉRER LE COURS
+              </Button>
+            </div>
+          </form>
+
+          {/* Feedback Messages */}
+          {successMessage && (
+            <div style={styles.successBanner}>
+              <CheckCircle2 size={18} color="var(--accent-success)" />
+              <span style={{ fontWeight: 700 }}>{successMessage}</span>
+            </div>
+          )}
+          {errorMessage && (
+            <div style={styles.errorBanner}>
+              <span>{errorMessage}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Course Cards Grid ── */}
       <div style={styles.grid}>
         {courses.map((course) => {
           const courseChapterIds = course.chapters.map((ch) => ch.id);
           const completedCount = courseChapterIds.filter((id) =>
-            currentUser.completedChapters.includes(id)
+            currentUser.completedChapters.includes(id),
           ).length;
-          const progress = Math.round((completedCount / courseChapterIds.length) * 100);
+          const progress = Math.round(
+            (completedCount / courseChapterIds.length) * 100,
+          );
           const isCompleted = progress === 100;
 
           return (
-            <GlassCard key={course.id} interactive style={styles.card}>
-              <div style={styles.cardHeader}>
-                <span style={styles.category}>{course.category}</span>
-                <span
-                  style={{
-                    ...styles.difficulty,
-                    backgroundColor:
-                      course.difficulty === 'Débutant'
-                        ? 'rgba(16, 185, 129, 0.15)'
-                        : course.difficulty === 'Intermédiaire'
-                        ? 'rgba(245, 158, 11, 0.15)'
-                        : 'rgba(239, 68, 68, 0.15)',
-                    color:
-                      course.difficulty === 'Débutant'
-                        ? 'var(--accent-success)'
-                        : course.difficulty === 'Intermédiaire'
-                        ? 'var(--accent-warning)'
-                        : 'var(--accent-danger)',
-                  }}
-                >
-                  {course.difficulty}
-                </span>
-              </div>
+            <div key={course.id} style={styles.duoCard}>
+              {/* Upper Section */}
+              <div style={styles.cardUpper}>
+                {/* Top Row: Chapters count (Left) & XP Badge (Right) */}
+                <div style={styles.topMetaRow}>
+                  <div style={styles.chaptersBadge}>
+                    <BookOpen size={24} color="var(--accent-primary)" />
+                    <span>{course.chapters.length} chapitres</span>
+                  </div>
 
-              <h2 className="font-heading" style={styles.title}>{course.title}</h2>
-              <p className="font-body" style={styles.description}>{course.description}</p>
-
-              <div style={styles.stats}>
-                <div style={styles.statItem}>
-                  <BookOpen size={16} color="var(--text-muted)" />
-                  <span>{course.chapters.length} chapitres</span>
+                  <div style={styles.xpPill}>
+                    <span>+ {course.xpReward} XP</span>
+                  </div>
                 </div>
-                <div style={styles.statItem}>
-                  <Award size={16} color="var(--accent-warning)" />
-                  <span>+{course.xpReward} XP récompense</span>
+
+                {/* Title */}
+                <h3 className="font-heading" style={styles.duoTitle}>
+                  {course.title}
+                </h3>
+
+                {/* Clean Description */}
+                <p className="font-body" style={styles.duoDescription}>
+                  {course.description}
+                </p>
+              </div>
+
+              {/* Lower Section */}
+              <div style={styles.cardLower}>
+                {/* Progress Bar */}
+                <div style={styles.progressContainer}>
+                  <ProgressBar progress={progress} showPercentage={false} />
                 </div>
-              </div>
 
-              <div style={styles.progressContainer}>
-                <ProgressBar progress={progress} showPercentage label="Votre progression" />
-              </div>
-
-              <div style={styles.cardFooter}>
-                {isCompleted ? (
-                  <span style={styles.completedBadge}>
-                    <Sparkles size={14} />
-                    <span>Complété !</span>
-                  </span>
-                ) : (
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    {completedCount} chapitres complétés
-                  </span>
-                )}
-                <button
+                {/* Duolingo 3D Button */}
+                <Button
+                  variant={isCompleted ? "accent" : "primary"}
+                  fullWidth
+                  size="sm"
                   onClick={() => navigate(`/course/${course.id}`)}
-                  className="btn btn-primary"
-                  style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}
+                  iconRight={<ArrowRight size={16} />}
                 >
-                  {progress > 0 ? 'Continuer' : 'Démarrer'}
-                </button>
+                  {progress > 0
+                    ? isCompleted
+                      ? "REVOIR"
+                      : "CONTINUER"
+                    : "DÉMARRER"}
+                </Button>
               </div>
-            </GlassCard>
+            </div>
           );
         })}
       </div>
@@ -100,85 +261,166 @@ export const CourseCatalog: React.FC = () => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
-  header: {
-    marginBottom: '2rem',
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "2.2rem",
   },
+  headerRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: "1rem",
+  },
+
+  /* ── Creation Container ── */
+  createBoxContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.65rem",
+    width: "100%",
+  },
+  createHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+  },
+  createTitle: {
+    fontSize: "1.2rem",
+    fontWeight: 700,
+    color: "var(--text-primary)",
+    fontFamily: "var(--font-heading)",
+    letterSpacing: "0.02em",
+  },
+  createForm: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.65rem",
+    width: "100%",
+  },
+  courseTextarea: {
+    width: "100%",
+    minHeight: "150px",
+    padding: "1rem 1.2rem",
+    borderRadius: "16px",
+    border: "2px solid var(--glass-border)",
+    backgroundColor: "var(--bg-card)",
+    color: "var(--text-secondary)",
+    fontFamily: "var(--font-body)",
+    fontSize: "0.95rem",
+    fontWeight: 600,
+    lineHeight: "1.55",
+    outline: "none",
+    resize: "vertical",
+    boxShadow: "inset 0 2px 8px rgba(0, 0, 0, 0.4)",
+  },
+  buttonRow: {
+    display: "flex",
+    justifyContent: "flex-end",
+  },
+
+  /* ── Feedback Banners ── */
+  successBanner: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.6rem",
+    padding: "0.85rem 1.1rem",
+    borderRadius: "12px",
+    backgroundColor: "rgba(16, 185, 129, 0.14)",
+    border: "2px solid rgba(16, 185, 129, 0.35)",
+    color: "var(--accent-success)",
+    fontSize: "0.9rem",
+  },
+  errorBanner: {
+    padding: "0.85rem 1.1rem",
+    borderRadius: "12px",
+    backgroundColor: "rgba(239, 68, 68, 0.14)",
+    border: "2px solid rgba(239, 68, 68, 0.35)",
+    color: "var(--accent-danger)",
+    fontSize: "0.9rem",
+  },
+
+  /* ── Cards Grid ── */
   grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-    gap: '1.5rem',
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+    gap: "1.5rem",
+    isolation: "isolate",
   },
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    padding: '1.5rem',
+
+  /* ── Course Cards ── */
+  duoCard: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    height: "100%",
+    padding: "1.4rem 1.4rem 1.8rem 1.4rem",
+    borderRadius: "20px",
+    border: "2px solid var(--glass-border)",
+    boxShadow: "0 4px 0 var(--glass-border)",
+    boxSizing: "border-box",
+    overflow: "hidden",
+    isolation: "isolate",
+    transform: "translateZ(0)",
+    backfaceVisibility: "hidden",
   },
-  cardHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '1rem',
+  cardUpper: {
+    display: "flex",
+    flexDirection: "column",
   },
-  category: {
-    fontSize: '0.75rem',
-    fontWeight: 600,
-    textTransform: 'uppercase',
-    color: 'var(--accent-primary)',
-    letterSpacing: '0.05em',
+  topMetaRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "0.9rem",
   },
-  difficulty: {
-    fontSize: '0.75rem',
-    fontWeight: 600,
-    padding: '0.2rem 0.5rem',
-    borderRadius: '6px',
+  chaptersBadge: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "0.4rem",
+    fontSize: "1.2rem",
+    fontWeight: 800,
+    color: "var(--text-primary)",
   },
-  title: {
-    fontSize: '1.25rem',
-    marginBottom: '0.5rem',
-    lineHeight: '1.3',
+  xpPill: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "0.35rem",
+    fontSize: "0.85rem",
+    fontWeight: 900,
+    color: "#ffffff",
+    backgroundColor: "#f59e0b",
+    boxShadow: "0 3px 0 #b45309",
+    padding: "0.25rem 0.65rem",
+    borderRadius: "10px",
   },
-  description: {
-    color: 'var(--text-secondary)',
-    fontSize: '0.85rem',
-    lineHeight: '1.45',
-    marginBottom: '1.25rem',
-    flex: 1,
+
+  duoTitle: {
+    fontSize: "1.4rem",
+    fontWeight: 800,
+    color: "#ffffff",
+    margin: "0 0 0.55rem 0",
+    lineHeight: "1.35",
   },
-  stats: {
-    display: 'flex',
-    gap: '1.25rem',
-    marginBottom: '1.25rem',
-    fontSize: '0.8rem',
-    color: 'var(--text-secondary)',
+  duoDescription: {
+    fontSize: "0.85rem",
+    color: "var(--text-secondary)",
+    lineHeight: "1.5",
+    margin: 0,
+    display: "-webkit-box",
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: "vertical",
+    overflow: "hidden",
   },
-  statItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.35rem',
+  cardLower: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+    marginTop: "0.8rem",
   },
   progressContainer: {
-    marginBottom: '1.5rem',
-  },
-  cardFooter: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 'auto',
-    paddingTop: '1rem',
-    borderTop: '1px solid var(--glass-border)',
-  },
-  completedBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '0.25rem',
-    background: 'rgba(16, 185, 129, 0.1)',
-    border: '1px solid rgba(16, 185, 129, 0.2)',
-    color: 'var(--accent-success)',
-    padding: '0.2rem 0.5rem',
-    borderRadius: '6px',
-    fontSize: '0.75rem',
-    fontWeight: 600,
+    width: "100%",
   },
 };
 

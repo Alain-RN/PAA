@@ -91,7 +91,7 @@ export const CourseDetail: React.FC = () => {
                     <button
                       onClick={() => navigate(`/quiz/${course.id}/${chapter.id}`)}
                       className="btn btn-primary"
-                      style={{ ...styles.actionBtn, background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)' }}
+                      style={styles.actionBtn}
                     >
                       <HelpCircle size={14} />
                       <span>Quiz adaptatif</span>
@@ -101,28 +101,6 @@ export const CourseDetail: React.FC = () => {
               );
             })}
           </div>
-        </div>
-
-        {/* Right: Course stats details */}
-        <div style={styles.sidebar}>
-          <GlassCard>
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>Récompense Académique</h3>
-            <div style={styles.rewardBox}>
-              <div style={styles.rewardVal}>+{course.xpReward} XP</div>
-              <div style={styles.rewardLbl}>lors de la complétion totale</div>
-            </div>
-            
-            <div style={styles.rulesBox}>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
-                Règles de l'évaluation adaptative :
-              </h4>
-              <ul style={styles.rulesList}>
-                <li>Les questions changent de difficulté en fonction de vos réponses en direct.</li>
-                <li>Si vous obtenez plus de 80%, le cours est validé et vous débloquez des XP supplémentaires.</li>
-                <li>Si vous obtenez moins de 50%, l'IA locale Ollama active une alerte de révision sur votre tableau de bord.</li>
-              </ul>
-            </div>
-          </GlassCard>
         </div>
       </div>
     </div>

@@ -27,6 +27,7 @@ interface AppStateContextType {
   addCourse: (course: Course) => void;
   updateCourse: (course: Course) => void;
   deleteCourse: (courseId: string) => void;
+  addQuestionsForChapter: (chapterId: string, questions: Question[]) => void;
   usersList: User[];
   updateUserRole: (userId: string, role: 'student' | 'admin') => void;
 }
@@ -126,7 +127,8 @@ const INITIAL_COURSES: Course[] = [
 ];
 
 // Questions Pool by Chapter and Difficulty for Adaptive Quizzes
-const QUESTIONS_POOL: Record<string, Question[]> = {
+// This object is mutable to allow runtime injection of AI-generated questions
+let QUESTIONS_POOL: Record<string, Question[]> = {
   'c1_ch1': [
     { id: 'q1_easy', text: 'Que signifie le sigle SGBDR ?', options: ['Système Général de Base de Données Réseau', 'Système de Gestion de Bases de Données Relationnelles', 'Structure Graphique de Base de Données Répartie', 'Serveur de Gestion des Bases de Données Réplicables'], correctAnswerIndex: 1, explanation: 'SGBDR signifie Système de Gestion de Bases de Données Relationnelles.', difficulty: 'easy' },
     { id: 'q2_easy', text: 'Qu\'est-ce qu\'une clé primaire ?', options: ['Une clé qui crypte la base de données', 'Un identifiant unique pour chaque enregistrement d\'une table', 'Le mot de passe de l\'administrateur', 'La première colonne alphabétique'], correctAnswerIndex: 1, explanation: 'Une clé primaire identifie de manière unique chaque ligne d\'une table.', difficulty: 'easy' },
@@ -626,6 +628,11 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setCourses(prev => prev.filter(c => c.id !== courseId));
   };
 
+  // Inject AI-generated questions into the runtime pool
+  const addQuestionsForChapter = (chapterId: string, questions: Question[]) => {
+    QUESTIONS_POOL = { ...QUESTIONS_POOL, [chapterId]: questions };
+  };
+
   const updateUserRole = (userId: string, role: 'student' | 'admin') => {
     setUsersList(prev => prev.map(u => u.id === userId ? { ...u, role } : u));
     if (currentUser && currentUser.id === userId) {
@@ -684,6 +691,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         addCourse,
         updateCourse,
         deleteCourse,
+        addQuestionsForChapter,
         usersList,
         updateUserRole,
       }}

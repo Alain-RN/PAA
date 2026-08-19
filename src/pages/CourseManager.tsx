@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { useAppState } from '../hooks/useAppState';
 import type { Course } from '../types';
 import { GlassCard } from '../components/GlassCard';
-import { Plus, Trash2, Edit2, Check, X, FileText } from 'lucide-react';
+import { Plus, Trash2, Edit2, Check, X, FileText, Sparkles } from 'lucide-react';
+import { AICourseGenerator } from './AICourseGenerator';
 
 export const CourseManager: React.FC = () => {
   const { courses, addCourse, updateCourse, deleteCourse } = useAppState();
 
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isAIOpen, setIsAIOpen] = useState(false);
 
   // Form states
   const [title, setTitle] = useState('');
@@ -86,12 +88,24 @@ export const CourseManager: React.FC = () => {
           </p>
         </div>
         {!isAdding && (
-          <button onClick={() => setIsAdding(true)} className="btn btn-primary">
-            <Plus size={16} />
-            <span>Ajouter un cours</span>
-          </button>
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button
+              onClick={() => setIsAIOpen(true)}
+              className="btn btn-secondary"
+              style={styles.aiBtn}
+            >
+              <Sparkles size={16} style={{ color: '#a78bfa' }} />
+              <span>Générer avec l'IA</span>
+            </button>
+            <button onClick={() => setIsAdding(true)} className="btn btn-primary">
+              <Plus size={16} />
+              <span>Ajouter un cours</span>
+            </button>
+          </div>
         )}
       </div>
+
+      {isAIOpen && <AICourseGenerator onClose={() => setIsAIOpen(false)} />}
 
       {/* Add Form */}
       {isAdding && (
@@ -310,6 +324,10 @@ const styles: Record<string, React.CSSProperties> = {
   },
   editBtn: {
     padding: '0.4rem 0.8rem',
+  },
+  aiBtn: {
+    border: '1px solid rgba(167,139,250,0.35)',
+    background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(167,139,250,0.1))',
   },
 };
 

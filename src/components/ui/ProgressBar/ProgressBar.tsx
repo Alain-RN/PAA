@@ -20,8 +20,6 @@ export interface ProgressBarProps {
 
 export const ProgressBar: React.FC<ProgressBarProps> = ({
   progress,
-  label,
-  showPercentage = false,
   size = 'md',
   color = 'primary',
   className = '',
@@ -31,28 +29,22 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   const fillClass = [
     'progress-fill',
     color !== 'primary' ? `progress-fill-${color}` : '',
+
   ]
     .filter(Boolean)
     .join(' ');
 
   return (
     <div className={`progress-wrapper ${className}`}>
-      {(label || showPercentage) && (
-        <div className="progress-header">
-          {label && <span className="progress-label">{label}</span>}
-          {showPercentage && (
-            <span className="progress-percent">{percentage}%</span>
-          )}
-        </div>
-      )}
       <div
-        className={`progress-track progress-track-${size}`}
+        className={`progress-track`}
         role="progressbar"
         aria-valuenow={percentage}
         aria-valuemin={0}
         aria-valuemax={100}
       >
-        <div className={fillClass} style={{ width: `${percentage}%` }} />
+        <span className={`progress-percent progress-percent-${color}`}>{percentage}%</span>
+        <div className={fillClass} style={{ width: `${percentage}%` }}/>
       </div>
     </div>
   );
