@@ -117,7 +117,7 @@ export const CourseCatalog: React.FC = () => {
       {/* ── Page Header with Action Button ── */}
       <div style={styles.headerRow}>
         <div>
-          <h1 className="font-heading" style={{ fontSize: "2.1rem", margin: 0 }}>
+          <h1 className="font-heading" style={{ fontSize: "2.1rem", margin: 0, fontWeight: 800 }}>
             Mes Cours
           </h1>
           <p
@@ -130,13 +130,13 @@ export const CourseCatalog: React.FC = () => {
 
         <Button
           variant="primary"
-          size="sm"
+          size="md"
           onClick={() => {
             setIsFormOpen(!isFormOpen);
             setSuccessMessage(null);
             setErrorMessage(null);
           }}
-          iconLeft={isFormOpen ? <X size={16} /> : <Plus size={16} />}
+          iconLeft={isFormOpen ? <X size={18} /> : <Plus size={18} />}
         >
           {isFormOpen ? "Masquer la création" : "Créer un cours avec l'IA"}
         </Button>
@@ -166,7 +166,7 @@ export const CourseCatalog: React.FC = () => {
               <Button
                 type="submit"
                 variant="primary"
-                size="sm"
+                size="md"
                 disabled={isGenerating || !topic.trim()}
                 loading={isGenerating}
                 iconLeft={!isGenerating ? <Sparkles size={15} /> : undefined}
@@ -268,7 +268,6 @@ const styles: Record<string, React.CSSProperties> = {
   },
   headerRow: {
     display: "flex",
-    justifyContent: "space-between",
     alignItems: "center",
     flexWrap: "wrap",
     gap: "1rem",
@@ -296,7 +295,7 @@ const styles: Record<string, React.CSSProperties> = {
   createForm: {
     display: "flex",
     flexDirection: "column",
-    gap: "0.65rem",
+    gap: "1.1rem",
     width: "100%",
   },
   courseTextarea: {

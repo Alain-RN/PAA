@@ -1,0 +1,347 @@
+/* ── CourseDetail — Duolingo Exact Path Replica ── */
+
+.course-detail-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding-bottom: 4rem;
+}
+
+/* Header Section */
+.course-detail-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: #18252d;
+  border: 2px solid #2b3940;
+  box-shadow: 0 6px 0 #131f24;
+  border-radius: 20px;
+  padding: 1.5rem;
+}
+
+.course-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.course-category-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #ce82ff;
+  letter-spacing: 0.08em;
+  background: rgba(206, 130, 255, 0.12);
+  border: 1px solid rgba(206, 130, 255, 0.3);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.view-toggle-btns {
+  display: flex;
+  background: #131f24;
+  border: 2px solid #2b3940;
+  border-radius: 12px;
+  padding: 3px;
+  gap: 4px;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.toggle-btn.active {
+  background: #ce82ff;
+  color: #ffffff;
+  box-shadow: 0 3px 0 #9333ea;
+}
+
+.course-title {
+  font-size: 1.8rem;
+  font-weight: 900;
+  font-family: var(--font-heading);
+  color: #ffffff;
+  margin: 0;
+}
+
+.course-description {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.course-stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-top: 0.85rem;
+  border-top: 2px solid #2b3940;
+}
+
+/* ── 🗺️ DUOLINGO EXACT MAP CANVAS ── */
+.adventure-map-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  padding: 3rem 0;
+  margin: 0 auto;
+}
+
+.map-trail-canvas {
+  position: relative;
+  width: 340px;
+  margin: 0 auto;
+}
+
+/* Duolingo 3D Node Button */
+.duo-node-item {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -50%);
+}
+
+.duo-node-btn {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.15s ease;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.duo-node-btn:active {
+  transform: translateY(5px) !important;
+  box-shadow: 0 2px 0 currentColor !important;
+}
+
+/* 1. ACTIVE NODE (Vibrant Purple Duolingo Style) */
+.duo-node-btn.active {
+  background: #ce82ff;
+  box-shadow: 0 8px 0 #9333ea;
+}
+.duo-node-btn.active:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+}
+
+/* 2. COMPLETED NODE (Duolingo Green) */
+.duo-node-btn.completed {
+  background: #58cc02;
+  box-shadow: 0 8px 0 #46a302;
+}
+.duo-node-btn.completed:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+}
+
+/* 3. LOCKED NODE (Dark Translucent Slate) */
+.duo-node-btn.locked {
+  background: #233138;
+  box-shadow: 0 7px 0 #182328;
+  cursor: pointer;
+  opacity: 0.85;
+}
+.duo-node-btn.locked:hover {
+  background: #2b3b43;
+}
+
+/* 4. CHECKPOINT / CHEST NODE */
+.duo-node-btn.checkpoint {
+  width: 86px;
+  height: 76px;
+  border-radius: 20px;
+  background: #233138;
+  box-shadow: 0 8px 0 #182328;
+  border: 3px solid #2b3b43;
+}
+.duo-node-btn.checkpoint:hover {
+  background: #2b3b43;
+}
+
+/* 💬 FLOATING SPEECH BUBBLE TOOLTIP ("AVANCER ICI ?") */
+.duo-speech-tooltip {
+  position: absolute;
+  top: -56px;
+  background: #18252d;
+  color: #ce82ff;
+  border: 2px solid #ce82ff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  animation: duoTooltipBounce 2s infinite cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+/* Tooltip Downward Arrow Pointer */
+.duo-speech-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px 8px 0;
+  border-style: solid;
+  border-color: #ce82ff transparent;
+}
+
+.duo-speech-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px 6px 0;
+  border-style: solid;
+  border-color: #18252d transparent;
+  z-index: 1;
+}
+
+@keyframes duoTooltipBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* ── 📖 MODAL POP-UP (PORTAL TO BODY) ── */
+.duo-modal-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.duo-modal-card {
+  background: #18252d;
+  border: 2px solid #2b3940;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  border-radius: 24px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  position: relative;
+  animation: duoPop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.duo-modal-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.duo-modal-close {
+  background: #2b3940;
+  border: none;
+  color: #9ca3af;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.duo-modal-close:hover {
+  color: #ffffff;
+  background: #374151;
+}
+
+.duo-modal-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #ce82ff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.duo-modal-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.duo-modal-summary-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.duo-modal-reward {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 200, 0, 0.08);
+  border: 1.5px solid rgba(255, 200, 0, 0.3);
+  padding: 12px 16px;
+  border-radius: 14px;
+}
+
+.duo-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 0.25rem;
+}
+
+@keyframes duoPop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

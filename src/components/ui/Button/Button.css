@@ -2,7 +2,7 @@
 /* ─── Base ─── */
 .btn {
   font-family: var(--font-primary);
-  font-weight: 600;
+  font-weight: 800;
   font-size: 14px;
 
   min-height: 42px;
@@ -28,7 +28,6 @@
 
   -webkit-tap-highlight-color: transparent;
   text-transform: uppercase;
-  font-weight: 700;
 }
 
 /* ─── Press Effect ─── */

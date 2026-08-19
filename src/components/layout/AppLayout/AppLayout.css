@@ -51,7 +51,14 @@
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1024px) and (min-width: 769px) {
+  .app-layout__wrapper {
+    margin-left: 72px;
+    width: calc(100% - 72px);
+  }
+}
+
+@media (max-width: 768px) {
   .app-layout {
     overflow: auto;
   }
@@ -61,6 +68,7 @@
     width: 100%;
     height: auto;
     overflow: visible;
+    padding-bottom: 70px;
   }
   
   .app-layout__container {
@@ -72,7 +80,7 @@
     height: auto;
     overflow-y: visible;
     padding: var(--space-4);
-    padding-top: 5rem;
+    padding-bottom: 2rem;
     mask-image: none;
     -webkit-mask-image: none;
   }

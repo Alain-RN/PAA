@@ -1,8 +1,183 @@
-.btn-sidebar {
-  background: transparent;
+.sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: var(--bg-mode);
+  backdrop-filter: blur(20px);
+  border-right: 2px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  z-index: 100;
+  box-sizing: border-box;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.btn-sidebar:hover {
-  background: rgba(255, 255, 255, 0.05)
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.4rem;
+  padding-left: 0.5rem;
+}
+
+.sidebar-logo-link {
+  color: #49c0f8;
+  font-size: 30px;
+  letter-spacing: 0.02em;
+  font-weight: 900;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-logo-icon {
+  display: none;
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: #49c0f8;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.sidebar-btn {
+  background: transparent;
+  border: 2px solid transparent;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-size: 0.94rem;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: var(--transition-smooth);
+}
+
+.sidebar-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-btn.active {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--glass-border-focus);
+  color: #74D0F1;
+}
+
+.sidebar-label {
+  white-space: nowrap;
+  transition: opacity 0.2s ease;
+}
+
+/* ── 📱 ECRAN MOYEN (Tablette : Sidebar compacte à gauche) ── */
+@media (max-width: 1024px) and (min-width: 769px) {
+  :root {
+    --sidebar-width: 72px;
+  }
+
+  .sidebar {
+    width: 72px;
+    padding: 16px 8px;
+    align-items: center;
+  }
+
+  .sidebar-logo {
+    padding-left: 0;
+    justify-content: center;
+  }
+
+  .sidebar-logo-text {
+    display: none;
+  }
+
+  .sidebar-logo-icon {
+    display: block;
+  }
+
+  .sidebar-label {
+    display: none;
+  }
+
+  .sidebar-btn {
+    justify-content: center;
+    padding: 0.85rem;
+    gap: 0;
+  }
+}
+
+/* ── 📱 ECRAN PETIT (Mobile : Bottom Navigation Bar en bas) ── */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 0px;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: 64px;
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 4px 8px;
+    border-right: none;
+    border-top: 2px solid var(--glass-border);
+    background: var(--bg-mode);
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .sidebar-logo {
+    display: none;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .sidebar-btn {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 2px;
+    border-radius: 10px;
+    border: none;
+  }
+
+  .sidebar-btn.active {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+  }
+
+  .sidebar-label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1.1;
+  }
 }
 

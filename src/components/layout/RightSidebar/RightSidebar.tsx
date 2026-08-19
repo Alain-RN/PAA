@@ -1,7 +1,7 @@
 import React from 'react';
 import './RightSidebar.css';
 import { useAppState } from '../../../hooks/useAppState';
-import { Flame, Shield, Heart, Lock, Gift, ChevronRight, Sparkles, Brain, Zap } from 'lucide-react';
+import { Flame, Shield, Heart, Lock, Gift, ChevronRight, Sparkles, Brain, Zap, Gem } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ProgressBar, Button } from '../../ui';
 
@@ -38,7 +38,7 @@ export const RightSidebar: React.FC = () => {
 
         {/* Gemmes / XP */}
         <div className="stat-pill" title="Points XP accumulés">
-          <span style={{ fontSize: '1rem', lineHeight: 1 }}>💎</span>
+          <Gem size={18} color="var(--accent-primary)" fill="rgba(73, 192, 248, 0.2)" />
           <span className="stat-pill-val" style={{ color: 'var(--accent-primary)' }}>
             {estimatedXp}
           </span>

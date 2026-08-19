@@ -2,6 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from '../Sidebar';
 import { RightSidebar } from '../RightSidebar';
+import { MobileHeader } from '../MobileHeader';
 import './AppLayout.css';
 
 /**
@@ -10,7 +11,10 @@ import './AppLayout.css';
 const AppLayout: React.FC = () => {
   return (
     <div className="app-layout">
-      {/* Sidebar gauche fixe */}
+      {/* En-tête mobile fixe en haut */}
+      <MobileHeader />
+
+      {/* Sidebar gauche fixe (Desktop) / Bottom bar (Mobile) */}
       <Sidebar />
 
       {/* Zone globale centrée */}

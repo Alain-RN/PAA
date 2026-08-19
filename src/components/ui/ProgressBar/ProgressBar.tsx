@@ -34,10 +34,17 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     .filter(Boolean)
     .join(' ');
 
+  const trackClass = [
+    'progress-track',
+    size !== 'md' ? `progress-track-${size}` : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <div className={`progress-wrapper ${className}`}>
       <div
-        className={`progress-track`}
+        className={trackClass}
         role="progressbar"
         aria-valuenow={percentage}
         aria-valuemin={0}

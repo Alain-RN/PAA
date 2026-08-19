@@ -184,3 +184,18 @@
   gap: 10px;
   margin-top: auto;
 }
+
+/* ── 📱 ECRAN PETIT (Mobile) ── */
+@media (max-width: 768px) {
+  .right-sidebar {
+    width: 100%;
+    height: auto;
+    padding-right: 0;
+    padding-bottom: 20px;
+    overflow-y: visible;
+  }
+
+  .right-sidebar .top-stats-row {
+    display: none;
+  }
+}

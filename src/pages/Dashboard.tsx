@@ -3,17 +3,13 @@ import { useAppState } from '../hooks/useAppState';
 import { useNavigate } from 'react-router-dom';
 import { GlassCard } from '../components/GlassCard';
 import { ProgressBar } from '../components/ProgressBar';
-import { Flame, Award, BookOpen, ChevronRight, TrendingUp, Star } from 'lucide-react';
+import { BookOpen, ChevronRight, Star } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
   const { currentUser, courses } = useAppState();
   const navigate = useNavigate();
 
   if (!currentUser) return null;
-
-  const totalChapters = courses.reduce((acc, c) => acc + c.chapters.length, 0);
-  const completedChaptersCount = currentUser.completedChapters.length;
-  const progressRatio = Math.round((completedChaptersCount / (totalChapters || 1)) * 100);
 
   const difficultyConfig = {
     'Débutant':     { bg: 'rgba(16,185,129,0.12)', color: 'var(--accent-success)' },

@@ -44,39 +44,95 @@ const ALL_BADGES: Badge[] = [
   { id: 'b6', name: 'Perfectionniste', description: 'Obtenir 100% de réussite sur un quiz adaptatif', icon: 'Award', category: 'quiz' },
 ];
 
-// Initial Mock Courses
+// Initial Mock Courses (with a 10-chapter course for full adventure map testing)
 const INITIAL_COURSES: Course[] = [
   {
     id: 'c1',
     title: 'Bases de Données Relationnelles & SQL',
-    description: 'Apprenez à modéliser vos données, concevoir des bases PostgreSQL/MySQL, et maîtriser le langage SQL des requêtes de base aux jointures complexes.',
+    description: 'Parcours complet de 10 chapitres : de la modélisation MCD/MLD jusqu\'à l\'optimisation avancée, le sharding et les transactions ACID.',
     category: 'Bases de données',
     difficulty: 'Débutant',
-    xpReward: 300,
+    xpReward: 500,
     chapters: [
       {
         id: 'c1_ch1',
         courseId: 'c1',
         title: 'Introduction aux SGBDR et Modélisation (MCD, MLD)',
-        content: 'Un Système de Gestion de Bases de Données Relationnelles (SGBDR) organise les données sous forme de tables reliées entre elles. Avant de coder, il faut modéliser : \n1. Le Modèle Conceptuel des Données (MCD) avec des entités et des associations.\n2. Le Modèle Logique des Données (MLD) traduisant ces entités en tables relationnelles avec clés primaires (Unique ID) et clés étrangères (Foreign Keys) assurant l\'intégrité référentielle.\n\nExemple de relations :\n- Un-à-Plusieurs (1:N) : Un étudiant appartient à une classe.\n- Plusieurs-à-Plusieurs (N:M) : Un étudiant s\'inscrit à plusieurs cours. Cette relation nécessite une table d\'association.',
-        summaryByAI: 'Les SGBDR structurent les données en tables. La conception passe par un MCD (entités/associations) puis un MLD (tables avec clés primaires et clés étrangères). Les clés étrangères permettent de lier les entités de façon intègre.',
+        content: 'Un Système de Gestion de Bases de Données Relationnelles (SGBDR) organise les données sous forme de tables reliées entre elles. Avant de coder, il faut modéliser le MCD (entités/associations) puis le MLD (tables avec clés primaires et clés étrangères).',
+        summaryByAI: 'Les SGBDR structurent les données en tables. La conception passe par un MCD (entités/associations) puis un MLD (tables avec clés primaires et clés étrangères).',
         order: 1
       },
       {
         id: 'c1_ch2',
         courseId: 'c1',
         title: 'Sélection et filtrage des données (SELECT, WHERE, ORDER BY)',
-        content: 'Le langage SQL (Structured Query Language) permet d\'interroger les tables. La commande de base est SELECT, combinée à FROM.\n\nSyntaxe de base :\n`SELECT colonne1, colonne2 FROM table;`\n\nPour filtrer les données, on utilise la clause WHERE :\n`SELECT * FROM etudiants WHERE niveau >= 3;`\n\nOn peut trier les résultats avec ORDER BY (ASC pour croissant, DESC pour décroissant) :\n`SELECT nom, xp FROM etudiants ORDER BY xp DESC;`\n\nOpérateurs logiques : AND, OR, NOT, IN, LIKE (recherche textuelle avec wildcard `%`).',
-        summaryByAI: 'Pour récupérer des données spécifiques, utilisez SELECT. Filtrez les lignes avec WHERE en spécifiant des conditions logiques. Triez les résultats avec ORDER BY.',
+        content: 'Le langage SQL permet d\'interroger les tables. La commande SELECT combinée à WHERE filtre les enregistrements et ORDER BY ordonne les résultats.',
+        summaryByAI: 'Pour récupérer des données spécifiques, utilisez SELECT. Filtrez les lignes avec WHERE et triez les résultats avec ORDER BY.',
         order: 2
       },
       {
         id: 'c1_ch3',
         courseId: 'c1',
         title: 'Jointures complexes et Agrégations (JOIN, GROUP BY, HAVING)',
-        content: 'Les jointures permettent de combiner les colonnes de plusieurs tables basées sur une valeur commune (généralement clé primaire = clé étrangère).\n\nTypes de jointures :\n- INNER JOIN : retourne les enregistrements ayant des correspondances dans les deux tables.\n- LEFT JOIN : retourne tous les enregistrements de la table de gauche, et les correspondances de droite.\n- RIGHT JOIN : retourne tous les enregistrements de la table de droite, et les correspondances de gauche.\n\nLes fonctions d\'agrégation (SUM, AVG, COUNT, MAX, MIN) permettent de calculer des statistiques. Elles s\'associent à GROUP BY pour regrouper les lignes.\n\nFiltrer un groupe :\nPour appliquer une condition sur un calcul agrégé, WHERE ne fonctionne pas. Il faut utiliser HAVING :\n`SELECT cours_id, COUNT(etudiant_id) FROM inscriptions GROUP BY cours_id HAVING COUNT(etudiant_id) > 5;`',
-        summaryByAI: 'Les JOIN fusionnent les données de plusieurs tables. Les fonctions d\'agrégation groupent les données via GROUP BY, et HAVING filtre ces groupes (contrairement à WHERE qui filtre les lignes individuelles).',
+        content: 'Les jointures (INNER, LEFT, RIGHT) combinent plusieurs tables. GROUP BY associe les fonctions d\'agrégation (SUM, AVG, COUNT) et HAVING filtre les groupes agrégés.',
+        summaryByAI: 'Les JOIN fusionnent les données de plusieurs tables. Les fonctions d\'agrégation groupent les données via GROUP BY et HAVING.',
         order: 3
+      },
+      {
+        id: 'c1_ch4',
+        courseId: 'c1',
+        title: 'Sous-requêtes et Expressions de Table Communes (CTE)',
+        content: 'Les sous-requêtes imbriquées et les clauses `WITH` (Common Table Expressions) permettent d\'isoler la logique de calculs intermédiaires complexes et récursifs.',
+        summaryByAI: 'Les CTE (WITH) et sous-requêtes décomposent des requêtes SQL complexes en blocs de code lisibles et réutilisables.',
+        order: 4
+      },
+      {
+        id: 'c1_ch5',
+        courseId: 'c1',
+        title: 'Indexation et Optimisation de Requêtes (B-Tree, EXPLAIN)',
+        content: 'Les index (B-Tree, Hash) accélèrent considérablement la recherche de lignes. L\'analyse du plan d\'exécution avec `EXPLAIN ANALYZE` permet d\'identifier les requêtes gourmandes.',
+        summaryByAI: 'Les index accélèrent la lecture de données. Analysez l\'efficacité de vos requêtes grâce à la commande EXPLAIN ANALYZE.',
+        order: 5
+      },
+      {
+        id: 'c1_ch6',
+        courseId: 'c1',
+        title: 'Transactions SQL et Propriétés ACID',
+        content: 'Une transaction garantit l\'Atomicité, la Cohérence, l\'Isolation et la Durabilité (ACID) des opérations bancaires et critiques au moyen de COMMIT et ROLLBACK.',
+        summaryByAI: 'Les transactions garantissent le principe ACID. En cas d\'erreur durant une suite d\'opérations, ROLLBACK annule l\'ensemble des modifications.',
+        order: 6
+      },
+      {
+        id: 'c1_ch7',
+        courseId: 'c1',
+        title: 'Procédures Stockées et Déclencheurs (Triggers)',
+        content: 'Les déclencheurs (Triggers) exécutent automatiquement du code serveur (PL/pgSQL) lors d\'opérations INSERT, UPDATE ou DELETE pour automatiser des tâches d\'audit.',
+        summaryByAI: 'Les Triggers exécutent du code PL/SQL automatiquement lors de modifications en base pour maintenir l\'intégrité des données.',
+        order: 7
+      },
+      {
+        id: 'c1_ch8',
+        courseId: 'c1',
+        title: 'Sécurité, Gestion des Rôles et Prévention des Injection SQL',
+        content: 'Protéger la base requiert l\'utilisation de requêtes préparées (Prepared Statements), la gestion stricte des privilèges (GRANT/REVOKE) et le principe du moindre privilège.',
+        summaryByAI: 'Utilisez des requêtes préparées pour bloquer les injections SQL et configurez les droits d\'accès avec les rôles SQL.',
+        order: 8
+      },
+      {
+        id: 'c1_ch9',
+        courseId: 'c1',
+        title: 'NoSQL hybride, Types JSONB et Recherche Full-Text',
+        content: 'PostgreSQL permet de stocker du JSON semi-structuré avec le type JSONB indexable (GIN) et d\'effectuer des recherches textuelles avancées avec tsvector.',
+        summaryByAI: 'Combinez le relationnel et le NoSQL en interrogeant du JSONB ultra-rapide et en exécutant de la recherche textuelle native.',
+        order: 9
+      },
+      {
+        id: 'c1_ch10',
+        courseId: 'c1',
+        title: 'Architectures Distribuées, Réplication et Sharding',
+        content: 'Passez à l\'échelle mondiale en configurant la réplication Master-Replica pour la haute disponibilité et le partitionnement (Sharding) pour distribuer la charge.',
+        summaryByAI: 'Le sharding et la réplication répartissent la charge de travail et assurent la haute disponibilité de vos bases de données.',
+        order: 10
       }
     ]
   },
@@ -92,16 +148,16 @@ const INITIAL_COURSES: Course[] = [
         id: 'c2_ch1',
         courseId: 'c2',
         title: 'Comprendre le DOM virtuel & Syntaxe JSX',
-        content: 'React repose sur le Virtual DOM. Au lieu de manipuler directement le DOM du navigateur (qui est une opération lente), React conserve une copie légère en mémoire. Quand l\'état change, React crée un nouveau Virtual DOM, le compare à l\'ancien (algorithme de Diffing), et ne met à jour que les éléments réels modifiés (Reconciliation).\n\nJSX (JavaScript XML) permet d\'écrire des structures HTML directement au sein du code JavaScript. Chaque balise JSX est convertie en appel de fonction `React.createElement`. Il y a des règles de syntaxe :\n- Un seul élément parent racine.\n- Les attributs s\'écrivent en camelCase (ex : class devient className).\n- On intègre du code JS dynamique dans des accolades `{}`.',
-        summaryByAI: 'Le Virtual DOM permet à React d\'optimiser les rendus en ne mettant à jour que les parties du DOM qui ont changé. JSX combine HTML et JS dans un format lisible.',
+        content: 'React repose sur le Virtual DOM...',
+        summaryByAI: 'Le Virtual DOM permet à React d\'optimiser les rendus en ne mettant à jour que les parties du DOM qui ont changé.',
         order: 1
       },
       {
         id: 'c2_ch2',
         courseId: 'c2',
         title: 'Gestion de l\'état local et effets secondaires (useState, useEffect)',
-        content: 'L\'état représente les données dynamiques d\'un composant qui provoquent un nouveau rendu lorsqu\'elles changent. On utilise le hook `useState` :\n`const [count, setCount] = useState(0);`\n\nPour gérer les effets secondaires (appels API, écouteurs d\'événements, synchronisations), on utilise `useEffect` :\n`useEffect(() => { ... }, [dependencies]);`\nLe tableau de dépendances détermine quand l\'effet s\'exécute. S\'il est vide `[]`, il s\'exécute uniquement au montage du composant. La fonction retournée à la fin de l\'effet sert à nettoyer (Clean-up) pour éviter les fuites de mémoire.',
-        summaryByAI: 'useState gère l\'état réactif local d\'un composant. useEffect contrôle les effets de bord et la synchronisation externe, avec nettoyage au démontage.',
+        content: 'L\'état représente les données dynamiques...',
+        summaryByAI: 'useState gère l\'état réactif local d\'un composant. useEffect contrôle les effets de bord.',
         order: 2
       }
     ]
@@ -109,7 +165,7 @@ const INITIAL_COURSES: Course[] = [
   {
     id: 'c3',
     title: 'Intelligence Artificielle Locale avec Ollama',
-    description: 'Intégrez des modèles de langage avancés (Llama 3, Mistral) directement en local dans vos applications web sans dépendre d\'API payantes.',
+    description: 'Intégrez des modèles de langage avancés (Llama 3, Mistral) directement en local.',
     category: 'Intelligence Artificielle',
     difficulty: 'Avancé',
     xpReward: 500,
@@ -118,8 +174,8 @@ const INITIAL_COURSES: Course[] = [
         id: 'c3_ch1',
         courseId: 'c3',
         title: 'Introduction aux LLM locaux',
-        content: 'L\'exécution locale d\'IA offre plusieurs avantages : confidentialité absolue des données, absence de frais d\'API récurrents, et fonctionnement hors-ligne. Ollama est un outil léger qui permet de faire tourner des modèles de langage géants (LLM) sous macOS, Linux et Windows en exposant une API REST locale sur le port 11434.\n\nLes modèles populaires incluent :\n- Llama 3 (Meta) : excellent en généraliste.\n- Mistral (Français) : performant et optimisé.\n- Codellama / Qwen : spécialisés en programmation.',
-        summaryByAI: 'Ollama simplifie l\'exécution de grands modèles (LLM) en local sur votre machine. Il gère le matériel et expose une API HTTP simple pour communiquer avec les modèles.',
+        content: 'L\'exécution locale d\'IA offre plusieurs avantages...',
+        summaryByAI: 'Ollama simplifie l\'exécution de grands modèles (LLM) en local sur votre machine.',
         order: 1
       }
     ]
@@ -244,7 +300,15 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [courses, setCourses] = useState<Course[]>(() => {
     try {
       const saved = localStorage.getItem('elearning_courses');
-      return saved ? JSON.parse(saved) : INITIAL_COURSES;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const c1 = parsed.find((c: any) => c.id === 'c1');
+        if (!c1 || !c1.chapters || c1.chapters.length < 10) {
+          return INITIAL_COURSES;
+        }
+        return parsed;
+      }
+      return INITIAL_COURSES;
     } catch (e) {
       console.error("Error parsing elearning_courses:", e);
       return INITIAL_COURSES;
