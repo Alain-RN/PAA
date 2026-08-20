@@ -345,3 +345,24 @@
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+
+/* ── 📱 ADAPTATION RESPONSIVE MOBILE ── */
+@media (max-width: 768px) {
+  .adventure-map-wrapper {
+    padding: 1.5rem 0;
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  .map-trail-canvas {
+    transform: scale(0.92);
+    transform-origin: top center;
+  }
+
+  .duo-modal-card {
+    max-width: 90vw;
+    width: 360px;
+    padding: 20px;
+  }
+}
+

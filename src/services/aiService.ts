@@ -297,21 +297,186 @@ Génère EXACTEMENT ${nbChapters} chapitres. Le contenu doit être en FRANÇAIS.
   return { course, questionsByChapter };
 }
 
+// ─── Intégration de llama.cpp / LLM local (Sans Base de Données) ─────────────
+
+async function generateWithLlamaCpp(params: AIGenerationParams, baseUrl: string): Promise<AIGenerationResult> {
+  const { title, category, difficulty, nbChapters, additionalContext } = params;
+  const courseId = `c_ai_${Date.now()}`;
+
+  const prompt = `Tu es un expert pédagogique. Génère un cours complet en JSON strict avec cette structure exacte (SANS MARKDOWN, SANS TEXTE AVANT OU APRES) :
+{
+  "description": "description du cours en 2-3 phrases",
+  "chapters": [
+    {
+      "title": "Titre du chapitre",
+      "content": "Contenu détaillé du chapitre avec explications et exemples",
+      "summaryByAI": "Résumé concis du chapitre",
+      "questions": [
+        {"text": "Question 1 ?", "options": ["Option A", "Option B", "Option C", "Option D"], "correctAnswerIndex": 0, "explanation": "Explication", "difficulty": "easy"},
+        {"text": "Question 2 ?", "options": ["Option A", "Option B", "Option C", "Option D"], "correctAnswerIndex": 1, "explanation": "Explication", "difficulty": "medium"},
+        {"text": "Question 3 ?", "options": ["Option A", "Option B", "Option C", "Option D"], "correctAnswerIndex": 2, "explanation": "Explication", "difficulty": "hard"}
+      ]
+    }
+  ]
+}
+
+Paramètres du cours:
+- Titre: "${title}"
+- Catégorie: "${category}"
+- Difficulté: "${difficulty}"
+- Nombre de chapitres: ${nbChapters}
+${additionalContext ? `- Contexte: ${additionalContext}` : ''}
+
+Réponds uniquement avec le JSON.`;
+
+  let rawText = '';
+
+  // 1. Essayer le serveur HTTP llama.cpp / Ollama en mode OpenAI (/v1/chat/completions)
+  try {
+    const chatUrl = baseUrl.replace(/\/$/, '') + '/v1/chat/completions';
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000); // 12s timeout check
+
+    const res = await fetch(chatUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [
+          { role: 'system', content: 'Tu es un assistant pédagogique qui réponds TOUJOURS en JSON valide.' },
+          { role: 'user', content: prompt },
+        ],
+        temperature: 0.7,
+        stream: false,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const data = await res.json();
+      rawText = data.choices?.[0]?.message?.content || '';
+    }
+  } catch (e) {
+    console.log('OpenAI endpoint fallback for llama.cpp:', e);
+  }
+
+  // 2. Si endpoint chat non disponible, essayer l'endpoint natif llama.cpp (/completion)
+  if (!rawText) {
+    const compUrl = baseUrl.replace(/\/$/, '') + '/completion';
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+    const res = await fetch(compUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: `[INST] Tu es un assistant pédagogique qui réponds TOUJOURS en JSON valide.\n${prompt} [/INST]`,
+        temperature: 0.7,
+        n_predict: 4096,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) throw new Error(`Serveur llama.cpp non joignable à ${baseUrl}`);
+    const data = await res.json();
+    rawText = data.content || '';
+  }
+
+  const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error('Aucun JSON valide dans la réponse du modèle llama.cpp');
+
+  const parsed = JSON.parse(jsonMatch[0]);
+
+  const chapters: Chapter[] = (parsed.chapters as any[]).map((ch: any, i: number) => ({
+    id: `${courseId}_ch${i + 1}`,
+    courseId,
+    title: ch.title || `Chapitre ${i + 1}`,
+    content: ch.content || `Contenu du chapitre ${i + 1}`,
+    summaryByAI: ch.summaryByAI || `Résumé du chapitre ${i + 1}`,
+    order: i + 1,
+  }));
+
+  const course: Course = {
+    id: courseId,
+    title,
+    description: parsed.description || `Cours "${title}" généré localement par llama.cpp.`,
+    category,
+    difficulty,
+    xpReward: DIFFICULTY_XP[difficulty] || 300,
+    chapters,
+    isRecommended: false,
+  };
+
+  const questionsByChapter: Record<string, Question[]> = {};
+  (parsed.chapters as any[]).forEach((ch: any, i: number) => {
+    const chapterId = chapters[i].id;
+    const ts = Date.now() + i;
+    if (Array.isArray(ch.questions)) {
+      questionsByChapter[chapterId] = ch.questions.map((q: any, qi: number) => ({
+        id: `${chapterId}_q${qi + 1}_${q.difficulty || 'medium'}_${ts + qi}`,
+        text: q.text,
+        options: q.options || ['Option A', 'Option B', 'Option C', 'Option D'],
+        correctAnswerIndex: typeof q.correctAnswerIndex === 'number' ? q.correctAnswerIndex : 0,
+        explanation: q.explanation || 'Explication de la réponse.',
+        difficulty: (q.difficulty as 'easy' | 'medium' | 'hard') || 'medium',
+      }));
+    }
+  });
+
+  return { course, questionsByChapter };
+}
+
 // ─── Fonction principale exportée ─────────────────────────────────────────────
 
 export async function generateCourseWithAI(params: AIGenerationParams): Promise<AIGenerationResult> {
+  const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002/api';
+  const llamaUrl =
+    (import.meta.env.VITE_LLAMA_URL as string) ||
+    localStorage.getItem('llama_cpp_url') ||
+    'http://localhost:8080';
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
 
+  // 1. Tenter la génération via le backend Express (qui persiste dans PostgreSQL)
+  try {
+    const res = await fetch(`${backendUrl}/courses/generate-ai`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.course) {
+        const questionsByChapter: Record<string, Question[]> = {};
+        (data.course.chapters || []).forEach((ch: any) => {
+          if (ch.questions) {
+            questionsByChapter[ch.id] = ch.questions;
+          }
+        });
+        return { course: data.course, questionsByChapter };
+      }
+    }
+  } catch (err) {
+    console.warn('Backend Express non disponible pour la génération AI (fallback local):', err);
+  }
+
+  // 2. Tenter la connexion directe au serveur llama.cpp local
+  try {
+    return await generateWithLlamaCpp(params, llamaUrl);
+  } catch (err) {
+    console.warn('llama.cpp non disponible (fallback Gemini / local):', err);
+  }
+
+  // 3. Tenter l'API Gemini si la clé est présente
   if (apiKey && apiKey.length > 10) {
     try {
       return await generateWithGemini(params, apiKey);
     } catch (err) {
-      console.warn('Gemini API failed, falling back to local simulation:', err);
-      // Fallback gracieux sur la simulation locale
+      console.warn('Gemini API échoué :', err);
     }
   }
 
-  // Simulation locale avec un léger délai pour l'effet "IA qui travaille"
-  await new Promise((resolve) => setTimeout(resolve, 2500));
+  // 4. Générateur dynamique autonome
+  await new Promise((resolve) => setTimeout(resolve, 1500));
   return simulateLocalGeneration(params);
 }

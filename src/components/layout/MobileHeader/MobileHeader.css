@@ -1,32 +1,96 @@
+/* ── 📱 DUOLINGO EXACT MOBILE TOP BAR HEADER ── */
 .mobile-header {
   display: none;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
+  /* background-color: #131f24; */
+  border-bottom: 2px solid #202f36;
+  z-index: 990;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .mobile-header {
     display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 56px;
-    background: var(--bg-mode);
-    backdrop-filter: blur(20px);
-    border-bottom: 2px solid var(--glass-border);
-    z-index: 1000;
     align-items: center;
-    justify-content: center;
-    padding: 0 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-    box-sizing: border-box;
   }
+}
 
-  .mobile-header-stats {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 480px;
-    gap: 8px;
-  }
+.mobile-header-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.mobile-header .stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease;
+}
+
+.mobile-header .stat-pill:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 1. Level / Course Badge */
+.level-icon-badge {
+  width: 28px;
+  height: 22px;
+  background: linear-gradient(135deg, #ff4b4b 0%, #d32f2f 100%);
+  border-radius: 6px;
+  border: 1.5px solid #ff7b7b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 0 #991b1b;
+}
+
+.level-val {
+  color: #ffffff;
+  font-family: var(--font-heading, sans-serif);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+/* 2. Streak Flame */
+.streak-val {
+  font-family: var(--font-heading, sans-serif);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.streak-pill.active .streak-val {
+  color: #ff9600;
+}
+
+.streak-pill.inactive .streak-val {
+  color: #52656d;
+}
+
+/* 3. Gems / XP */
+.gems-val {
+  color: #1cb0f6;
+  font-family: var(--font-heading, sans-serif);
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+/* 4. Hearts */
+.hearts-val {
+  color: #ff4b4b;
+  font-family: var(--font-heading, sans-serif);
+  font-weight: 800;
+  font-size: 0.95rem;
 }

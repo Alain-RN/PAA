@@ -11,14 +11,14 @@ export const Login: React.FC = () => {
   const [role, setRole] = useState<'student' | 'admin'>('student');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       setError('Veuillez entrer une adresse email.');
       return;
     }
 
-    const success = login(email, role);
+    const success = await login(email, role);
     if (success) {
       if (role === 'admin') {
         navigate('/admin');
@@ -26,18 +26,7 @@ export const Login: React.FC = () => {
         navigate('/dashboard');
       }
     } else {
-      setError('Identifiants incorrects. Essayez un email existant ou les identifiants de test.');
-    }
-  };
-
-  const handleQuickLogin = (testEmail: string, testRole: 'student' | 'admin') => {
-    const success = login(testEmail, testRole);
-    if (success) {
-      if (testRole === 'admin') {
-        navigate('/admin');
-      } else {
-        navigate('/dashboard');
-      }
+      setError('Identifiants incorrects. Vérifiez votre email ou créez un compte.');
     }
   };
 
@@ -106,30 +95,6 @@ export const Login: React.FC = () => {
             Se connecter
           </Button>
         </form>
-
-        <div style={styles.divider}>
-          <span style={styles.dividerText}>Accès rapide de démonstration (Soutenance)</span>
-        </div>
-
-        <div style={styles.quickAccess}>
-          <Button
-            variant="secondary"
-            onClick={() => handleQuickLogin('noel.isoa@student.univ.fr', 'student')}
-            style={styles.quickBtn}
-            iconLeft={<Sparkles size={14} color="var(--accent-warning)" />}
-          >
-            Compte Étudiant (Noël Isoa)
-          </Button>
-
-          <Button
-            variant="secondary"
-            onClick={() => handleQuickLogin('admin@ecole.fr', 'admin')}
-            style={styles.quickBtn}
-            iconLeft={<Sparkles size={14} color="var(--accent-secondary)" />}
-          >
-            Compte Admin (Directeur)
-          </Button>
-        </div>
 
         <div style={styles.footer}>
           <span>Pas encore inscrit ?</span>

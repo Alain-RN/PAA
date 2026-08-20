@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppState } from '../../../hooks/useAppState';
-import { Flame, Heart, Sparkles, Gem } from 'lucide-react';
+import { Flame, Heart, Gem, GraduationCap } from 'lucide-react';
 import './MobileHeader.css';
 
 export const MobileHeader: React.FC = () => {
@@ -8,42 +8,42 @@ export const MobileHeader: React.FC = () => {
 
   if (!currentUser) return null;
 
-  const completedCount = currentUser.completedChapters.length;
-  const estimatedXp = completedCount * 30 + currentUser.badges.length * 50;
+  const isStreakActive = currentUser.streak > 0;
 
   return (
     <header className="mobile-header">
       <div className="mobile-header-stats">
-        {/* IA */}
-        <div className="stat-pill" title="Assistant IA Adaptatif">
-          <Sparkles size={16} color="var(--accent-secondary)" />
-          <span className="stat-pill-val">IA</span>
+        {/* Level / Course Pill */}
+        <div className="stat-pill level-pill" title={`Niveau ${currentUser.level}`}>
+          <div className="level-icon-badge">
+            <GraduationCap size={16} color="#ffffff" />
+          </div>
+          <span className="stat-pill-val level-val">{currentUser.level}</span>
         </div>
 
-        {/* Streak */}
-        <div className="stat-pill" title="Série de jours consécutifs">
+        {/* Streak Pill */}
+        <div
+          className={`stat-pill streak-pill ${isStreakActive ? 'active' : 'inactive'}`}
+          title="Série de jours consécutifs"
+        >
           <Flame
             size={18}
-            color="var(--accent-warning)"
-            fill={currentUser.streak > 0 ? 'var(--accent-warning)' : 'none'}
+            color={isStreakActive ? '#ff9600' : '#52656d'}
+            fill={isStreakActive ? '#ff9600' : 'none'}
           />
-          <span className="stat-pill-val">{currentUser.streak}</span>
+          <span className="stat-pill-val streak-val">{currentUser.streak}</span>
         </div>
 
-        {/* XP */}
-        <div className="stat-pill" title="Points XP accumulés">
-          <Gem size={18} color="var(--accent-primary)" fill="rgba(73, 192, 248, 0.2)" />
-          <span className="stat-pill-val" style={{ color: 'var(--accent-primary)' }}>
-            {estimatedXp}
-          </span>
+        {/* Gems / XP Pill */}
+        <div className="stat-pill gems-pill" title="Points XP & Gemmes">
+          <Gem size={18} color="#1cb0f6" fill="#1cb0f6" />
+          <span className="stat-pill-val gems-val">{currentUser.xp}</span>
         </div>
 
-        {/* Hearts */}
-        <div className="stat-pill" title="Vies restantes pour les quiz">
-          <Heart size={18} color="var(--accent-danger)" fill="var(--accent-danger)" />
-          <span className="stat-pill-val" style={{ color: 'var(--accent-danger)' }}>
-            5
-          </span>
+        {/* Hearts Pill */}
+        <div className="stat-pill hearts-pill" title="Vies restantes">
+          <Heart size={18} color="#ff4b4b" fill="#ff4b4b" />
+          <span className="stat-pill-val hearts-val">5</span>
         </div>
       </div>
     </header>

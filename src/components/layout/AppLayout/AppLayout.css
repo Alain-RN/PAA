@@ -60,7 +60,10 @@
 
 @media (max-width: 768px) {
   .app-layout {
-    overflow: auto;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .app-layout__wrapper {
@@ -68,20 +71,23 @@
     width: 100%;
     height: auto;
     overflow: visible;
-    padding-bottom: 70px;
+    padding-bottom: 80px; /* Espace pour la barre de navigation en bas */
   }
   
   .app-layout__container {
     flex-direction: column;
     height: auto;
+    width: 100%;
   }
 
   .app-layout__main {
     height: auto;
     overflow-y: visible;
     padding: var(--space-4);
-    padding-bottom: 2rem;
+    padding-bottom: 1.5rem;
     mask-image: none;
     -webkit-mask-image: none;
+    width: 100%;
+    box-sizing: border-box;
   }
 }

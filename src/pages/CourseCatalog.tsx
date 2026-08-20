@@ -191,71 +191,95 @@ export const CourseCatalog: React.FC = () => {
         </div>
       )}
 
-      {/* ── Course Cards Grid ── */}
-      <div style={styles.grid}>
-        {courses.map((course) => {
-          const courseChapterIds = course.chapters.map((ch) => ch.id);
-          const completedCount = courseChapterIds.filter((id) =>
-            currentUser.completedChapters.includes(id),
-          ).length;
-          const progress = Math.round(
-            (completedCount / courseChapterIds.length) * 100,
-          );
-          const isCompleted = progress === 100;
+      {/* ── Course Cards Grid / Empty State ── */}
+      {courses.length === 0 ? (
+        <div style={styles.emptyContainer}>
+          <BookOpen size={48} color="var(--accent-primary)" style={{ opacity: 0.7 }} />
+          <h3 className="font-heading" style={{ fontSize: "1.4rem", fontWeight: 800, margin: "0.8rem 0 0.4rem 0" }}>
+            Aucun cours disponible en base de données PostgreSQL
+          </h3>
+          <p className="font-body" style={{ color: "var(--text-secondary)", maxWidth: "460px", textAlign: "center", margin: "0 0 1.2rem 0", lineHeight: 1.5 }}>
+            Votre catalogue est actuellement vide. Utilisez le bouton <strong>"Créer un cours avec l'IA"</strong> ci-dessus pour générer dynamiquement votre premier parcours de formation !
+          </p>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => {
+              setIsFormOpen(true);
+              setSuccessMessage(null);
+              setErrorMessage(null);
+            }}
+            iconLeft={<Wand2 size={16} />}
+          >
+            Créer mon premier cours
+          </Button>
+        </div>
+      ) : (
+        <div style={styles.grid}>
+          {courses.map((course) => {
+            const courseChapterIds = course.chapters.map((ch) => ch.id);
+            const completedCount = courseChapterIds.filter((id) =>
+              currentUser.completedChapters.includes(id),
+            ).length;
+            const progress = Math.round(
+              (completedCount / courseChapterIds.length) * 100,
+            );
+            const isCompleted = progress === 100;
 
-          return (
-            <div key={course.id} style={styles.duoCard}>
-              {/* Upper Section */}
-              <div style={styles.cardUpper}>
-                {/* Top Row: Chapters count (Left) & XP Badge (Right) */}
-                <div style={styles.topMetaRow}>
-                  <div style={styles.chaptersBadge}>
-                    <BookOpen size={24} color="var(--accent-primary)" />
-                    <span>{course.chapters.length} chapitres</span>
+            return (
+              <div key={course.id} style={styles.duoCard}>
+                {/* Upper Section */}
+                <div style={styles.cardUpper}>
+                  {/* Top Row: Chapters count (Left) & XP Badge (Right) */}
+                  <div style={styles.topMetaRow}>
+                    <div style={styles.chaptersBadge}>
+                      <BookOpen size={24} color="var(--accent-primary)" />
+                      <span>{course.chapters.length} chapitres</span>
+                    </div>
+
+                    <div style={styles.xpPill}>
+                      <span>+ {course.xpReward} XP</span>
+                    </div>
                   </div>
 
-                  <div style={styles.xpPill}>
-                    <span>+ {course.xpReward} XP</span>
+                  {/* Title */}
+                  <h3 className="font-heading" style={styles.duoTitle}>
+                    {course.title}
+                  </h3>
+
+                  {/* Clean Description */}
+                  <p className="font-body" style={styles.duoDescription}>
+                    {course.description}
+                  </p>
+                </div>
+
+                {/* Lower Section */}
+                <div style={styles.cardLower}>
+                  {/* Progress Bar */}
+                  <div style={styles.progressContainer}>
+                    <ProgressBar progress={progress} showPercentage={false} />
                   </div>
+
+                  {/* Duolingo 3D Button */}
+                  <Button
+                    variant={isCompleted ? "accent" : "primary"}
+                    fullWidth
+                    size="sm"
+                    onClick={() => navigate(`/course/${course.id}`)}
+                    iconRight={<ArrowRight size={16} />}
+                  >
+                    {progress > 0
+                      ? isCompleted
+                        ? "REVOIR"
+                        : "CONTINUER"
+                      : "DÉMARRER"}
+                  </Button>
                 </div>
-
-                {/* Title */}
-                <h3 className="font-heading" style={styles.duoTitle}>
-                  {course.title}
-                </h3>
-
-                {/* Clean Description */}
-                <p className="font-body" style={styles.duoDescription}>
-                  {course.description}
-                </p>
               </div>
-
-              {/* Lower Section */}
-              <div style={styles.cardLower}>
-                {/* Progress Bar */}
-                <div style={styles.progressContainer}>
-                  <ProgressBar progress={progress} showPercentage={false} />
-                </div>
-
-                {/* Duolingo 3D Button */}
-                <Button
-                  variant={isCompleted ? "accent" : "primary"}
-                  fullWidth
-                  size="sm"
-                  onClick={() => navigate(`/course/${course.id}`)}
-                  iconRight={<ArrowRight size={16} />}
-                >
-                  {progress > 0
-                    ? isCompleted
-                      ? "REVOIR"
-                      : "CONTINUER"
-                    : "DÉMARRER"}
-                </Button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
@@ -420,6 +444,17 @@ const styles: Record<string, React.CSSProperties> = {
   },
   progressContainer: {
     width: "100%",
+  },
+  emptyContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "3.5rem 1.5rem",
+    borderRadius: "24px",
+    border: "2px dashed var(--glass-border)",
+    backgroundColor: "rgba(255, 255, 255, 0.02)",
+    textAlign: "center",
   },
 };
 
