@@ -8,8 +8,8 @@ interface AppStateContextType {
   historyLogs: HistoryLog[];
   leaderboard: LeaderboardEntry[];
   analytics: GlobalAnalytics;
-  login: (email: string, role: 'student' | 'admin') => Promise<boolean>;
-  register: (name: string, email: string) => void;
+  login: (email: string, password: string, role: 'student' | 'admin') => Promise<boolean>;
+  register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
   completeChapter: (courseId: string, chapterId: string) => void;
   saveQuizAttempt: (
@@ -94,8 +94,8 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [currentUser]);
 
   // Login implementation — authenticates against PostgreSQL backend
-  const login = async (email: string, role: 'student' | 'admin'): Promise<boolean> => {
-    const user: any = await backendAPI.login(email, role);
+  const login = async (email: string, password: string, role: 'student' | 'admin'): Promise<boolean> => {
+    const user: any = await backendAPI.login(email, password, role);
     if (user && user.id) {
       setCurrentUser(user);
       const newLog: HistoryLog = {
@@ -111,8 +111,8 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return false;
   };
 
-  // Register implementation
-  const register = (name: string, email: string) => {
+  // Register implementation — persists to PostgreSQL backend
+  const register = async (name: string, email: string, password: string): Promise<boolean> => {
     const newStudent: User = {
       id: 'u_' + Date.now(),
       name,
@@ -131,8 +131,8 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     setUsersList(prev => [...prev, newStudent]);
     setCurrentUser(newStudent);
-    // Persist new user to PostgreSQL database
-    backendAPI.syncUser(newStudent);
+    // Persist new user with password to PostgreSQL database
+    await backendAPI.syncUser({ ...newStudent, password });
 
     // Initial log
     const newLog: HistoryLog = {
@@ -143,6 +143,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       type: 'login',
     };
     setHistoryLogs(prev => [newLog, ...prev]);
+    return true;
   };
 
   const logout = () => {
@@ -412,9 +413,11 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     syncAllBackendData();
   }, []);
 
-  // ADMIN CRUD FUNCTIONS & BACKEND PERSISTENCE
   const addCourse = (course: Course) => {
-    setCourses(prev => [...prev, course]);
+    setCourses(prev => {
+      const exists = prev.some(c => c.id === course.id);
+      return exists ? prev.map(c => c.id === course.id ? course : c) : [...prev, course];
+    });
     backendAPI.saveCourse(course);
   };
 
@@ -510,5 +513,5 @@ export const useAppState = () => {
 
 // Expose questions list
 export const getQuestionsForChapter = (chapterId: string): Question[] => {
-  return QUESTIONS_POOL[chapterId] || QUESTIONS_POOL['c1_ch1']; // fallback
+  return QUESTIONS_POOL[chapterId] || QUESTIONS_POOL['c1_ch1'];
 };

@@ -100,7 +100,7 @@ export const CourseCatalog: React.FC = () => {
       );
 
       setSuccessMessage(
-        `Félicitations ! Le cours "${result.course.title}" a été créé avec succès.`,
+        `Félicitations ! Le cours "${result.course.title}" et ses chapitres ont été générés par l'IA localement (anciens cours supprimés).`,
       );
       setTopic("");
     } catch {
@@ -129,6 +129,7 @@ export const CourseCatalog: React.FC = () => {
         </div>
 
         <Button
+          style={{ marginTop: "1rem" }}
           variant="primary"
           size="md"
           onClick={() => {
@@ -260,6 +261,7 @@ export const CourseCatalog: React.FC = () => {
                     <ProgressBar progress={progress} showPercentage={false} />
                   </div>
 
+
                   {/* Duolingo 3D Button */}
                   <Button
                     variant={isCompleted ? "accent" : "primary"}
@@ -290,13 +292,6 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: "column",
     gap: "2.2rem",
   },
-  headerRow: {
-    display: "flex",
-    alignItems: "center",
-    flexWrap: "wrap",
-    gap: "1rem",
-  },
-
   /* ── Creation Container ── */
   createBoxContainer: {
     display: "flex",

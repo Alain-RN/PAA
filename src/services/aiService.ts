@@ -430,7 +430,7 @@ Réponds uniquement avec le JSON.`;
 // ─── Fonction principale exportée ─────────────────────────────────────────────
 
 export async function generateCourseWithAI(params: AIGenerationParams): Promise<AIGenerationResult> {
-  const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002/api';
+  const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const llamaUrl =
     (import.meta.env.VITE_LLAMA_URL as string) ||
     localStorage.getItem('llama_cpp_url') ||

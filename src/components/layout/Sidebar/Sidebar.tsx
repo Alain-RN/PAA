@@ -12,10 +12,11 @@ import {
   FileText,
   Users,
   BarChart3,
+  LogOut,
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
-  const { currentUser } = useAppState();
+  const { currentUser, logout } = useAppState();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -38,6 +39,11 @@ export const Sidebar: React.FC = () => {
         { id: 'admin-users', label: 'Utilisateurs', icon: Users, path: '/admin/users' },
         { id: 'admin-analytics', label: 'Analytics avancés', icon: BarChart3, path: '/admin/analytics' },
       ];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <aside className="sidebar">
@@ -71,6 +77,17 @@ export const Sidebar: React.FC = () => {
             </button>
           );
         })}
+
+        <button
+          onClick={handleLogout}
+          className="sidebar-btn sidebar-logout-btn"
+          title="Se déconnecter"
+        >
+          <LogOut size={20} color="var(--accent-danger, #ef4444)" />
+          <span className="sidebar-label" style={{ color: 'var(--accent-danger, #ef4444)' }}>
+            Déconnexion
+          </span>
+        </button>
       </nav>
     </aside>
   );

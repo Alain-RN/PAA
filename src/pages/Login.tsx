@@ -2,23 +2,24 @@ import React, { useState } from 'react';
 import { useAppState } from '../hooks/useAppState';
 import { useNavigate } from 'react-router-dom';
 import { Card, Input, Button } from '../components';
-import { Cpu, Mail, Sparkles, User, ShieldAlert } from 'lucide-react';
+import { Mail, Lock, Sparkles, User, ShieldAlert } from 'lucide-react';
 
 export const Login: React.FC = () => {
   const { login } = useAppState();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState<'student' | 'admin'>('student');
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      setError('Veuillez entrer une adresse email.');
+    if (!email || !password) {
+      setError('Veuillez renseigner votre email et mot de passe.');
       return;
     }
 
-    const success = await login(email, role);
+    const success = await login(email, password, role);
     if (success) {
       if (role === 'admin') {
         navigate('/admin');
@@ -26,7 +27,7 @@ export const Login: React.FC = () => {
         navigate('/dashboard');
       }
     } else {
-      setError('Identifiants incorrects. Vérifiez votre email ou créez un compte.');
+      setError('Identifiants incorrects. Vérifiez votre mot de passe.');
     }
   };
 
@@ -37,11 +38,11 @@ export const Login: React.FC = () => {
 
       <Card style={styles.card}>
         <div style={styles.header}>
-          <div style={styles.logoIcon}>
-            <Cpu size={32} color="var(--accent-primary)" />
+          <div style={styles.logoBadge}>
+            <span style={styles.logoIconText}>M</span>
           </div>
           <h1 className="font-heading" style={styles.title}>
-            AdaptLearn<span style={{ color: 'var(--accent-primary)' }}>.ia</span>
+            Malloow<span style={{ color: 'var(--accent-primary)' }}>.ia</span>
           </h1>
           <p className="font-body" style={styles.subtitle}>
             Plateforme d'apprentissage adaptative & gamifiée pour Licence Informatique
@@ -85,13 +86,23 @@ export const Login: React.FC = () => {
             label="Adresse email"
             iconLeft={<Mail size={16} />}
             type="email"
-            placeholder="nom@student.univ.fr"
+            placeholder={role === 'admin' ? 'admin@univ.fr' : 'nom@student.univ.fr'}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             wrapperClassName="mb-1"
           />
 
-          <Button type="submit" fullWidth style={{ marginTop: '0.5rem' }}>
+          <Input
+            label="Mot de passe"
+            iconLeft={<Lock size={16} />}
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            wrapperClassName="mb-1"
+          />
+
+          <Button type="submit" fullWidth style={{ marginTop: '0.75rem' }}>
             Se connecter
           </Button>
         </form>
@@ -150,20 +161,27 @@ const styles: Record<string, React.CSSProperties> = {
   header: {
     marginBottom: '2rem',
   },
-  logoIcon: {
-    background: 'rgba(99, 102, 241, 0.1)',
-    border: '1px solid rgba(99, 102, 241, 0.2)',
-    borderRadius: '16px',
+  logoBadge: {
+    background: 'rgba(73, 192, 248, 0.12)',
+    border: '2px solid rgba(73, 192, 248, 0.3)',
+    borderRadius: '20px',
     width: '64px',
     height: '64px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     margin: '0 auto 1rem auto',
-    boxShadow: '0 0 20px rgba(99, 102, 241, 0.2)',
+    boxShadow: '0 0 24px rgba(73, 192, 248, 0.25)',
+  },
+  logoIconText: {
+    fontFamily: 'var(--font-heading)',
+    fontWeight: 900,
+    fontSize: '2rem',
+    color: '#49c0f8',
   },
   title: {
-    fontSize: '2rem',
+    fontSize: '2.2rem',
+    letterSpacing: '0.02em',
     marginBottom: '0.5rem',
   },
   subtitle: {

@@ -1,292 +1,452 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppState } from '../hooks/useAppState';
-import { useAI } from '../hooks/useAI';
 import { useParams, useNavigate } from 'react-router-dom';
-import { GlassCard } from '../components/GlassCard';
-import { Sparkles, Brain, Check, HelpCircle, ArrowLeft, Terminal } from 'lucide-react';
+import { Button } from '../components/ui';
+import { ArrowLeft, Loader2, Sparkles } from 'lucide-react';
+import { backendAPI } from '../services/apiService';
+import type { BlockType, ContentBlock, ContextMenuState } from '../components/lesson';
+import {
+  LessonHeader,
+  LessonBlockRenderer,
+  LessonBlockEditor,
+  LessonContextMenu,
+  LessonActionsBar,
+} from '../components/lesson';
+import './LessonView.css';
 
 export const LessonView: React.FC = () => {
   const { courseId, chapterId } = useParams<{ courseId: string; chapterId: string }>();
   const navigate = useNavigate();
-  const { currentUser, courses, completeChapter } = useAppState();
-  const { useTypewriter } = useAI();
-  const [triggerAI, setTriggerAI] = useState(false);
+  const { currentUser, courses, completeChapter, updateCourse } = useAppState();
 
-  if (!currentUser || !courseId || !chapterId) return null;
+  const [isGeneratingContent, setIsGeneratingContent] = useState(false);
+  const [dynamicContent, setDynamicContent] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // States pour l'édition dynamique et le Menu Contextuel
+  const [editChapterTitle, setEditChapterTitle] = useState('');
+  const [editBlocks, setEditBlocks] = useState<ContentBlock[]>([]);
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
 
   const course = courses.find((c) => c.id === courseId);
   const chapter = course?.chapters.find((ch) => ch.id === chapterId);
 
+  // Reset state quand le chapitre change
+  useEffect(() => {
+    setDynamicContent(null);
+    setIsEditing(false);
+    setContextMenu(null);
+  }, [courseId, chapterId]);
+
+  // Fermer le menu contextuel lors d'un clic n'importe où
+  useEffect(() => {
+    const handleCloseMenu = () => setContextMenu(null);
+    window.addEventListener('click', handleCloseMenu);
+    window.addEventListener('scroll', handleCloseMenu);
+    return () => {
+      window.removeEventListener('click', handleCloseMenu);
+      window.removeEventListener('scroll', handleCloseMenu);
+    };
+  }, []);
+
+  // Chargement ou génération du contenu par l'IA
+  useEffect(() => {
+    async function loadOrGenerateChapterContent() {
+      if (!course || !chapter) return;
+
+      const content = chapter.content || '';
+
+      const hasRealContent = (() => {
+        if (!content || content.trim().length < 20) return false;
+        try {
+          const parsed = JSON.parse(content);
+          return (
+            Array.isArray(parsed) ||
+            !!(parsed.introduction || parsed.theory || parsed.practicalExample || parsed.keyTakeaways)
+          );
+        } catch {
+          return false;
+        }
+      })();
+
+      if (hasRealContent) {
+        setDynamicContent(content);
+        return;
+      }
+
+      setIsGeneratingContent(true);
+      try {
+        const res: any = await backendAPI.generateChapterContent(
+          course.id,
+          chapter.id,
+          course.title,
+          chapter.title
+        );
+        if (res && res.content) {
+          setDynamicContent(res.content);
+          const updatedChapters = course.chapters.map((ch) =>
+            ch.id === chapter.id ? { ...ch, content: res.content } : ch
+          );
+          updateCourse({ ...course, chapters: updatedChapters });
+        }
+      } catch (err) {
+        console.error('❌ Erreur lors de la génération du contenu:', err);
+      } finally {
+        setIsGeneratingContent(false);
+      }
+    }
+    loadOrGenerateChapterContent();
+  }, [courseId, chapterId, courses]);
+
+  if (!currentUser || !courseId || !chapterId) return null;
+
   if (!course || !chapter) {
     return (
-      <div>
-        <h2>Leçon introuvable</h2>
-        <button onClick={() => navigate('/catalog')} className="btn btn-secondary">
+      <div className="lesson-container">
+        <h2 style={{ color: '#fff' }}>Leçon introuvable</h2>
+        <Button variant="secondary" onClick={() => navigate('/catalog')} iconLeft={<ArrowLeft size={16} />}>
           Retour au catalogue
-        </button>
+        </Button>
       </div>
     );
   }
 
   const isCompleted = currentUser.completedChapters.includes(chapterId);
+  const currentContent = dynamicContent || chapter.content || '';
 
-  // Typewriter text generator
-  const { displayedText, isGenerating } = useTypewriter(
-    `[Ollama Llama3-8B local] RÉSUMÉ PÉDAGOGIQUE DU CHAPITRE :
-• Objectif principal : comprendre comment structurer ou manipuler les données efficacement.
-• Point clé 1 : ${
-      chapterId === 'c1_ch1'
-        ? 'Les tables relationnelles s\'appuient sur des clés primaires uniques pour l\'identification, et des clés étrangères pour lier les entités.'
-        : chapterId === 'c1_ch2'
-        ? 'SELECT filtre verticalement (colonnes) tandis que WHERE filtre horizontalement (lignes). ORDER BY gère le tri.'
-        : 'Les jointures JOIN lient les lignes, GROUP BY effectue les agrégats de groupe, et HAVING filtre les résultats de calculs groupés.'
+  // Parse le contenu JSON en ContentBlock[]
+  const parseBlocks = (): ContentBlock[] => {
+    try {
+      const parsed = JSON.parse(currentContent);
+      if (Array.isArray(parsed)) return parsed;
+
+      const blocks: ContentBlock[] = [];
+      if (parsed.introduction) {
+        blocks.push({
+          id: 'b-intro',
+          type: 'info',
+          title: 'Introduction & Objectifs',
+          content: parsed.introduction,
+        });
+      }
+      if (parsed.theory) {
+        blocks.push({
+          id: 'b-theory',
+          type: 'paragraph',
+          title: 'Explications Théoriques',
+          content: parsed.theory,
+        });
+      }
+      if (parsed.practicalExample || parsed.codeExample) {
+        blocks.push({
+          id: 'b-code',
+          type: 'code',
+          title: 'Exemple Pratique',
+          content: parsed.practicalExample || parsed.codeExample,
+        });
+      }
+      if (parsed.keyTakeaways && Array.isArray(parsed.keyTakeaways)) {
+        blocks.push({
+          id: 'b-takeaways',
+          type: 'list',
+          title: 'Points Clés à Retenir',
+          items: parsed.keyTakeaways,
+        });
+      }
+      return blocks.length > 0
+        ? blocks
+        : [{ id: 'b-1', type: 'paragraph', title: 'Contenu', content: currentContent }];
+    } catch {
+      return [{ id: 'b-raw', type: 'paragraph', title: 'Explications', content: currentContent }];
     }
-• Conseil de l'IA : Mémorisez la syntaxe et testez toujours la cardinalité de vos relations pour éviter les requêtes lentes ou les doublons.`,
-    15,
-    triggerAI
-  );
-
-  const handleMarkAsCompleted = () => {
-    completeChapter(courseId, chapterId);
   };
 
+  const currentBlocks = isEditing ? editBlocks : parseBlocks();
+
+  // Gestion du Clic Droit
+  const handleContextMenu = (e: React.MouseEvent, blockId: string | null) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const menuWidth = 270;
+    const menuHeight = 500;
+
+    let x = e.clientX;
+    if (x + menuWidth > window.innerWidth) {
+      x = Math.max(10, window.innerWidth - menuWidth - 15);
+    }
+
+    let y = e.clientY;
+    if (y + menuHeight > window.innerHeight) {
+      y = Math.max(10, e.clientY - menuHeight);
+      if (y + menuHeight > window.innerHeight) {
+        y = Math.max(10, window.innerHeight - menuHeight - 15);
+      }
+    }
+
+    setContextMenu({
+      x,
+      y,
+      blockId,
+    });
+  };
+
+  const startEditing = () => {
+    setEditChapterTitle(chapter.title);
+    setEditBlocks(parseBlocks());
+    setIsEditing(true);
+    setContextMenu(null);
+  };
+
+  const handleInsertBlockAfter = (targetBlockId: string, type: BlockType) => {
+    const newId = `block-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+    let newBlock: ContentBlock;
+
+    switch (type) {
+      case 'header':
+        newBlock = { id: newId, type: 'header', title: 'Nouveau Titre' };
+        break;
+      case 'paragraph':
+        newBlock = { id: newId, type: 'paragraph', title: 'Nouvelle Section', content: 'Saisissez votre texte...' };
+        break;
+      case 'code':
+        newBlock = { id: newId, type: 'code', title: 'Exemple Pratique', content: '// Saisissez votre code' };
+        break;
+      case 'list':
+        newBlock = { id: newId, type: 'list', title: 'Liste à puces', items: ['Premier élément'] };
+        break;
+      case 'info':
+        newBlock = { id: newId, type: 'info', title: 'Note / Objectif', content: 'Remarque importante.' };
+        break;
+    }
+
+    setEditBlocks((prev) => {
+      const activeList = prev.length > 0 ? prev : parseBlocks();
+      const idx = activeList.findIndex((b) => b.id === targetBlockId);
+      if (idx < 0) return [...activeList, newBlock];
+      const next = [...activeList];
+      next.splice(idx + 1, 0, newBlock);
+      return next;
+    });
+
+    setIsEditing(true);
+    setContextMenu(null);
+  };
+
+  const handleConvertBlockType = (blockId: string, newType: BlockType) => {
+    setEditBlocks((prev) => {
+      const activeList = prev.length > 0 ? prev : parseBlocks();
+      return activeList.map((b) => {
+        if (b.id === blockId) {
+          return {
+            ...b,
+            type: newType,
+            items: newType === 'list' && (!b.items || b.items.length === 0) ? ['Élément 1'] : b.items,
+          };
+        }
+        return b;
+      });
+    });
+    setIsEditing(true);
+    setContextMenu(null);
+  };
+
+  const handleAddBlock = (type: BlockType) => {
+    const newId = `block-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+    let newBlock: ContentBlock;
+
+    switch (type) {
+      case 'header':
+        newBlock = { id: newId, type: 'header', title: 'Nouveau Titre' };
+        break;
+      case 'paragraph':
+        newBlock = { id: newId, type: 'paragraph', title: 'Section', content: 'Saisissez votre texte...' };
+        break;
+      case 'code':
+        newBlock = { id: newId, type: 'code', title: 'Exemple Pratique', content: '// Code...' };
+        break;
+      case 'list':
+        newBlock = { id: newId, type: 'list', title: 'Liste à puces', items: ['Élément 1'] };
+        break;
+      case 'info':
+        newBlock = { id: newId, type: 'info', title: 'Note / Objectif', content: 'Remarque...' };
+        break;
+    }
+
+    setEditBlocks((prev) => [...(prev.length > 0 ? prev : parseBlocks()), newBlock]);
+    setIsEditing(true);
+    setContextMenu(null);
+  };
+
+  const handleUpdateBlock = (id: string, updates: Partial<ContentBlock>) => {
+    setEditBlocks((prev) =>
+      prev.map((b) => (b.id === id ? { ...b, ...updates } : b))
+    );
+  };
+
+  const handleRemoveBlock = (id: string) => {
+    setEditBlocks((prev) => (prev.length > 0 ? prev : parseBlocks()).filter((b) => b.id !== id));
+    setContextMenu(null);
+  };
+
+  const handleMoveBlock = (id: string, direction: 'up' | 'down') => {
+    setEditBlocks((prev) => {
+      const activeList = prev.length > 0 ? prev : parseBlocks();
+      const idx = activeList.findIndex((b) => b.id === id);
+      if (idx < 0) return activeList;
+      if (direction === 'up' && idx === 0) return activeList;
+      if (direction === 'down' && idx === activeList.length - 1) return activeList;
+
+      const next = [...activeList];
+      const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+      const temp = next[idx];
+      next[idx] = next[targetIdx];
+      next[targetIdx] = temp;
+      return next;
+    });
+    setIsEditing(true);
+    setContextMenu(null);
+  };
+
+  const handleAddListItem = (blockId: string) => {
+    setEditBlocks((prev) =>
+      prev.map((b) => {
+        if (b.id === blockId) {
+          return { ...b, items: [...(b.items || []), 'Nouvel élément'] };
+        }
+        return b;
+      })
+    );
+  };
+
+  const handleUpdateListItem = (blockId: string, itemIdx: number, val: string) => {
+    setEditBlocks((prev) =>
+      prev.map((b) => {
+        if (b.id === blockId) {
+          const newItems = [...(b.items || [])];
+          newItems[itemIdx] = val;
+          return { ...b, items: newItems };
+        }
+        return b;
+      })
+    );
+  };
+
+  const handleRemoveListItem = (blockId: string, itemIdx: number) => {
+    setEditBlocks((prev) =>
+      prev.map((b) => {
+        if (b.id === blockId) {
+          return { ...b, items: (b.items || []).filter((_, i) => i !== itemIdx) };
+        }
+        return b;
+      })
+    );
+  };
+
+  const handleSaveAllChanges = async () => {
+    if (!course) return;
+    setIsSaving(true);
+    try {
+      const jsonString = JSON.stringify(editBlocks.length > 0 ? editBlocks : parseBlocks());
+      setDynamicContent(jsonString);
+
+      const updatedChapters = course.chapters.map((ch) =>
+        ch.id === chapterId
+          ? { ...ch, title: editChapterTitle.trim() || ch.title, content: jsonString }
+          : ch
+      );
+
+      const updatedCourse = { ...course, chapters: updatedChapters };
+      updateCourse(updatedCourse);
+      await backendAPI.saveCourse(updatedCourse);
+      setIsEditing(false);
+    } catch (err) {
+      console.error('❌ Erreur lors de la sauvegarde:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const chapterIdx = course.chapters.findIndex((ch) => ch.id === chapterId);
+
   return (
-    <div>
-      {/* Navigation */}
-      <button
-        onClick={() => navigate(`/course/${courseId}`)}
-        className="btn btn-secondary mb-2"
-        style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
-      >
-        <ArrowLeft size={14} />
-        <span>Retour au cours</span>
-      </button>
+    <div className="lesson-container" onContextMenu={(e) => handleContextMenu(e, null)}>
+      {/* ── EN-TÊTE FIXE ET TITRE ── */}
+      <LessonHeader
+        courseTitle={course.title}
+        chapterIdx={chapterIdx}
+        chapterTitle={chapter.title}
+        isEditing={isEditing}
+        isSaving={isSaving}
+        editChapterTitle={editChapterTitle}
+        onNavigateBack={() => navigate(`/course/${courseId}`)}
+        onStartEditing={startEditing}
+        onCancel={() => setIsEditing(false)}
+        onSave={handleSaveAllChanges}
+        onEditChapterTitleChange={setEditChapterTitle}
+      />
 
-      <div style={styles.header}>
-        <span style={styles.category}>{course.title}</span>
-        <h1 className="font-heading" style={{ fontSize: '1.8rem', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
-          {chapter.title}
-        </h1>
-      </div>
-
-      <div style={styles.layout}>
-        {/* Course Text Content */}
-        <div style={{ flex: 1.2 }}>
-          <GlassCard style={styles.lessonCard}>
-            {/* Formatted body */}
-            <div style={styles.contentBody}>
-              {chapter.content.split('\n\n').map((paragraph, idx) => {
-                if (paragraph.startsWith('`SELECT') || paragraph.startsWith('SELECT') || paragraph.startsWith('`const') || paragraph.startsWith('const')) {
-                  return (
-                    <div key={idx} style={styles.codeBlock}>
-                      <div style={styles.codeHeader}>
-                        <Terminal size={14} color="var(--text-muted)" />
-                        <span>Code Source</span>
-                      </div>
-                      <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: '0.85rem' }}>
-                        <code>{paragraph.replace(/`/g, '')}</code>
-                      </pre>
-                    </div>
-                  );
-                }
-                return (
-                  <p className="font-body" key={idx} style={{ marginBottom: '1.25rem', lineHeight: '1.6', fontSize: '0.95rem' }}>
-                    {paragraph}
-                  </p>
-                );
-              })}
-            </div>
-
-            {/* Complete Actions */}
-            <div style={styles.completionRow}>
-              {isCompleted ? (
-                <div style={styles.successBadge}>
-                  <Check size={16} />
-                  <span>Chapitre terminé (+30 XP)</span>
-                </div>
-              ) : (
-                <button onClick={handleMarkAsCompleted} className="btn btn-accent">
-                  <Check size={16} />
-                  <span>Valider la lecture (+30 XP)</span>
-                </button>
-              )}
-
-              <button
-                onClick={() => navigate(`/quiz/${courseId}/${chapterId}`)}
-                className="btn btn-primary"
-              >
-                <HelpCircle size={16} />
-                <span>Quiz d'adaptation</span>
-              </button>
-            </div>
-          </GlassCard>
+      {/* ── CONTENU PRINCIPAL ── */}
+      {isGeneratingContent ? (
+        <div className="lesson-loading">
+          <div className="lesson-loading-icon">
+            <Loader2 size={28} color="#ce82ff" className="lesson-spin" />
+          </div>
+          <p className="lesson-loading-title">
+            <Sparkles size={18} color="#ce82ff" /> L'IA rédige votre leçon...
+          </p>
+          <p className="lesson-loading-sub">
+            Le contenu est généré et sauvegardé automatiquement dans la base de données.
+          </p>
         </div>
-
-        {/* AI Sidebar */}
-        <div style={styles.sidebar}>
-          <GlassCard style={styles.aiCard}>
-            <div style={styles.aiCardHeader}>
-              <div style={styles.aiLogo}>
-                <Brain size={18} color="#fff" />
-              </div>
-              <div>
-                <div className="font-ui" style={{ fontWeight: 700, fontSize: '0.95rem' }}>Assistant IA Ollama</div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Mistral-7B local offline</div>
-              </div>
-            </div>
-
-            <p className="font-body" style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '1rem', lineHeight: '1.4' }}>
-              Générez un résumé instantané de ce cours exécuté localement sur votre machine sans connexion internet.
-            </p>
-
-            {!triggerAI && !isGenerating && (
-              <button
-                onClick={() => setTriggerAI(true)}
-                className="btn btn-secondary"
-                style={{ width: '100%', justifyContent: 'center', fontSize: '0.8rem' }}
-              >
-                <Sparkles size={14} color="var(--accent-warning)" />
-                <span>Résumer le cours par l'IA</span>
-              </button>
-            )}
-
-            {(triggerAI || isGenerating) && (
-              <div style={styles.aiOutputBox}>
-                {isGenerating && (
-                  <div style={styles.generatingBadge}>
-                    <div style={styles.spinner} />
-                    <span>Génération locale...</span>
-                  </div>
-                )}
-                <div style={styles.aiText}>
-                  {displayedText}
-                  {isGenerating && <span className="typewriter-cursor">|</span>}
-                </div>
-              </div>
-            )}
-          </GlassCard>
+      ) : isEditing ? (
+        /* ── ÉDITEUR VISUEL DE BLOCS ── */
+        <LessonBlockEditor
+          blocks={editBlocks}
+          isSaving={isSaving}
+          onUpdateBlock={handleUpdateBlock}
+          onRemoveBlock={handleRemoveBlock}
+          onMoveBlock={handleMoveBlock}
+          onAddBlock={handleAddBlock}
+          onAddListItem={handleAddListItem}
+          onUpdateListItem={handleUpdateListItem}
+          onRemoveListItem={handleRemoveListItem}
+          onCancel={() => setIsEditing(false)}
+          onSave={handleSaveAllChanges}
+          onContextMenu={handleContextMenu}
+        />
+      ) : (
+        /* ── MODE LECTURE PÉDAGOGIQUE ── */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {currentBlocks.map((block) => (
+            <LessonBlockRenderer
+              key={block.id}
+              block={block}
+              onContextMenu={handleContextMenu}
+            />
+          ))}
         </div>
-      </div>
+      )}
+
+      {/* ── MENU CONTEXTUEL CLIC DROIT EN PORTAL ── */}
+      <LessonContextMenu
+        contextMenu={contextMenu}
+        onStartEditing={startEditing}
+        onInsertBlockAfter={handleInsertBlockAfter}
+        onConvertBlockType={handleConvertBlockType}
+        onRemoveBlock={handleRemoveBlock}
+        onAddBlock={handleAddBlock}
+      />
+
+      {/* ── BARRE D'ACTIONS FINALES ── */}
+      { !isEditing && <LessonActionsBar
+        isCompleted={isCompleted}
+        onCompleteChapter={() => completeChapter(courseId, chapterId)}
+        onStartQuiz={() => navigate(`/quiz/${courseId}/${chapterId}`)}
+      />}
     </div>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  header: {
-    marginBottom: '1.5rem',
-  },
-  category: {
-    fontSize: '0.75rem',
-    fontWeight: 600,
-    textTransform: 'uppercase',
-    color: 'var(--accent-primary)',
-    letterSpacing: '0.05em',
-  },
-  layout: {
-    display: 'flex',
-    gap: '1.5rem',
-    flexWrap: 'wrap',
-  },
-  lessonCard: {
-    padding: '2rem 1.5rem',
-  },
-  contentBody: {
-    color: 'var(--text-primary)',
-  },
-  codeBlock: {
-    background: '#040711',
-    border: '1px solid var(--glass-border)',
-    borderRadius: '8px',
-    padding: '1rem',
-    margin: '1.5rem 0',
-    overflowX: 'auto',
-  },
-  codeHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    fontSize: '0.75rem',
-    color: 'var(--text-muted)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-    paddingBottom: '0.5rem',
-    marginBottom: '0.75rem',
-    fontWeight: 600,
-  },
-  completionRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: '2.5rem',
-    borderTop: '1px solid var(--glass-border)',
-    paddingTop: '1.5rem',
-    flexWrap: 'wrap',
-    gap: '1rem',
-  },
-  successBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    background: 'rgba(16, 185, 129, 0.15)',
-    border: '1px solid rgba(16, 185, 129, 0.3)',
-    color: 'var(--accent-success)',
-    padding: '0.6rem 1.2rem',
-    borderRadius: 'var(--border-radius-sm)',
-    fontSize: '0.9rem',
-    fontWeight: 600,
-  },
-  sidebar: {
-    width: '300px',
-  },
-  aiCard: {
-    background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(99, 102, 241, 0.04) 100%)',
-    border: '1px solid rgba(168, 85, 247, 0.2)',
-  },
-  aiCardHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.75rem',
-    marginBottom: '1rem',
-  },
-  aiLogo: {
-    width: '32px',
-    height: '32px',
-    borderRadius: '8px',
-    background: 'linear-gradient(135deg, var(--accent-secondary) 0%, var(--accent-primary) 100%)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 0 10px rgba(168, 85, 247, 0.3)',
-  },
-  aiOutputBox: {
-    background: 'rgba(0,0,0,0.3)',
-    border: '1px solid var(--glass-border)',
-    borderRadius: 'var(--border-radius-sm)',
-    padding: '0.85rem',
-    marginTop: '1rem',
-  },
-  generatingBadge: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    fontSize: '0.7rem',
-    color: 'var(--accent-secondary)',
-    fontWeight: 600,
-    marginBottom: '0.5rem',
-  },
-  spinner: {
-    width: '10px',
-    height: '10px',
-    border: '2px solid rgba(168, 85, 247, 0.2)',
-    borderTop: '2px solid var(--accent-secondary)',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
-  },
-  aiText: {
-    fontSize: '0.8rem',
-    lineHeight: '1.45',
-    whiteSpace: 'pre-line',
-    color: 'var(--text-primary)',
-  },
 };
 
 export default LessonView;

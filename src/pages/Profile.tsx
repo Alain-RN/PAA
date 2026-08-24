@@ -1,9 +1,11 @@
 import React from 'react';
 import { useAppState } from '../hooks/useAppState';
+import { useNavigate } from 'react-router-dom';
 import { GlassCard } from '../components/GlassCard';
+import { Button } from '../components/ui';
 import { 
   Award, Flame, Database, Cpu, TrendingUp, UserCheck, 
-  Mail, Calendar, Shield, BookOpen, CheckSquare, Lock 
+  Mail, Calendar, Shield, BookOpen, CheckSquare, Lock, LogOut 
 } from 'lucide-react';
 import type { Badge } from '../types';
 
@@ -18,7 +20,8 @@ const ALL_BADGES_GALLERY: Badge[] = [
 ];
 
 export const Profile: React.FC = () => {
-  const { currentUser, courses } = useAppState();
+  const { currentUser, courses, logout } = useAppState();
+  const navigate = useNavigate();
 
   if (!currentUser) return null;
 
@@ -74,6 +77,22 @@ export const Profile: React.FC = () => {
                 <Shield size={16} color="var(--text-muted)" />
                 <span style={{ fontSize: '0.85rem' }}>Université de Licence Informatique</span>
               </div>
+            </div>
+
+            <div style={{ marginTop: '1.5rem', width: '100%' }}>
+              <Button
+                variant="secondary"
+                fullWidth
+                size="md"
+                onClick={() => {
+                  logout();
+                  navigate('/login');
+                }}
+                iconLeft={<LogOut size={18} color="#ef4444" />}
+                style={{ color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.4)' }}
+              >
+                DÉCONNEXION
+              </Button>
             </div>
           </GlassCard>
 

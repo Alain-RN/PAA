@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 import { useAppState } from '../hooks/useAppState';
 import { useNavigate } from 'react-router-dom';
 import { GlassCard } from '../components/GlassCard';
-import { Cpu, Mail, User, ShieldAlert } from 'lucide-react';
+import { Mail, User, Lock, ShieldAlert } from 'lucide-react';
 
 export const Register: React.FC = () => {
   const { register } = useAppState();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email) {
+    if (!name || !email || !password) {
       setError('Veuillez remplir tous les champs.');
       return;
     }
@@ -23,7 +24,12 @@ export const Register: React.FC = () => {
       return;
     }
 
-    register(name, email);
+    if (password.length < 4) {
+      setError('Le mot de passe doit contenir au moins 4 caractères.');
+      return;
+    }
+
+    await register(name, email, password);
     navigate('/dashboard');
   };
 
@@ -34,10 +40,10 @@ export const Register: React.FC = () => {
 
       <GlassCard style={styles.card}>
         <div style={styles.header}>
-          <div style={styles.logoIcon}>
-            <Cpu size={32} color="var(--accent-primary)" />
+          <div style={styles.logoBadge}>
+            <span style={styles.logoIconText}>M</span>
           </div>
-          <h1 style={styles.title}>Rejoindre AdaptLearn</h1>
+          <h1 style={styles.title}>Rejoindre Malloow<span style={{ color: 'var(--accent-primary)' }}>.ia</span></h1>
           <p style={styles.subtitle}>
             Créez votre compte étudiant pour démarrer votre apprentissage personnalisé
           </p>
@@ -75,6 +81,21 @@ export const Register: React.FC = () => {
                 placeholder="noel.isoa@student.univ.fr"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="form-input"
+                style={{ paddingLeft: '2.5rem', width: '100%' }}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Mot de passe</label>
+            <div style={styles.inputWrapper}>
+              <Lock size={16} style={styles.inputIcon} />
+              <input
+                type="password"
+                placeholder="Créer un mot de passe"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="form-input"
                 style={{ paddingLeft: '2.5rem', width: '100%' }}
               />
@@ -140,17 +161,23 @@ const styles: Record<string, React.CSSProperties> = {
   header: {
     marginBottom: '2rem',
   },
-  logoIcon: {
-    background: 'rgba(99, 102, 241, 0.1)',
-    border: '1px solid rgba(99, 102, 241, 0.2)',
-    borderRadius: '16px',
+  logoBadge: {
+    background: 'rgba(73, 192, 248, 0.12)',
+    border: '2px solid rgba(73, 192, 248, 0.3)',
+    borderRadius: '20px',
     width: '64px',
     height: '64px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     margin: '0 auto 1rem auto',
-    boxShadow: '0 0 20px rgba(99, 102, 241, 0.2)',
+    boxShadow: '0 0 24px rgba(73, 192, 248, 0.25)',
+  },
+  logoIconText: {
+    fontFamily: 'var(--font-heading)',
+    fontWeight: 900,
+    fontSize: '2rem',
+    color: '#49c0f8',
   },
   title: {
     fontSize: '2rem',

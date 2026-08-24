@@ -81,6 +81,18 @@
   transition: opacity 0.2s ease;
 }
 
+.sidebar-logout-btn {
+  margin-top: auto;
+  border-top: 1px solid var(--glass-border);
+  border-radius: 12px;
+  transition: var(--transition-smooth);
+}
+
+.sidebar-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
 /* ── 📱 ECRAN MOYEN (Tablette : Sidebar compacte à gauche) ── */
 @media (max-width: 1024px) and (min-width: 769px) {
   :root {

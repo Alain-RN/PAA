@@ -1,9 +1,13 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-export async function fetchFromBackend<T>(endpoint: string, options?: RequestInit): Promise<T | null> {
+export async function fetchFromBackend<T>(
+  endpoint: string,
+  options?: RequestInit,
+  timeoutMs: number = 8000
+): Promise<T | null> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     const res = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
@@ -24,11 +28,11 @@ export async function fetchFromBackend<T>(endpoint: string, options?: RequestIni
 }
 
 export const backendAPI = {
-  // Authenticate user from PostgreSQL (no static fallback)
-  login: async (email: string, role: 'student' | 'admin') => {
+  // Authenticate user from PostgreSQL with email & password
+  login: async (email: string, password: string, role: 'student' | 'admin') => {
     return fetchFromBackend('/users/login', {
       method: 'POST',
-      body: JSON.stringify({ email, role }),
+      body: JSON.stringify({ email, password, role }),
     });
   },
 
@@ -70,11 +74,19 @@ export const backendAPI = {
     return fetchFromBackend('/courses');
   },
 
-  // Save Course to Postgres
+  // Save/Update Course to Postgres
   saveCourse: async (course: any) => {
     return fetchFromBackend('/courses', {
       method: 'POST',
       body: JSON.stringify(course),
     });
+  },
+
+  // Generate detailed chapter content on-demand via AI (long timeout for llama.cpp)
+  generateChapterContent: async (courseId: string, chapterId: string, courseTitle: string, chapterTitle: string) => {
+    return fetchFromBackend('/courses/generate-chapter', {
+      method: 'POST',
+      body: JSON.stringify({ courseId, chapterId, courseTitle, chapterTitle }),
+    }, 120000); // 120 secondes — llama.cpp peut être lent
   },
 };
