@@ -29,6 +29,7 @@ export const AICourseGenerator: React.FC<Props> = ({ onClose }) => {
   const [generatedQuestions, setGeneratedQuestions] = useState<Record<string, Question[]>>({});
 
   const [title, setTitle] = useState('');
+  const [nbChapters, setNbChapters] = useState<number>(6);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +47,7 @@ export const AICourseGenerator: React.FC<Props> = ({ onClose }) => {
         title,
         category: 'Informatique',
         difficulty: 'Débutant',
-        nbChapters: 3,
+        nbChapters,
       });
       clearInterval(interval);
       setGeneratedCourse(result.course);
@@ -83,7 +84,7 @@ export const AICourseGenerator: React.FC<Props> = ({ onClose }) => {
                 Créer un cours
               </h2>
               <p className="font-body" style={styles.headerSubtitle}>
-                Entrez simplement le sujet du cours que vous souhaitez apprendre.
+                Entrez le sujet et choisissez la densité du cours.
               </p>
             </div>
           </div>
@@ -111,12 +112,40 @@ export const AICourseGenerator: React.FC<Props> = ({ onClose }) => {
               autoFocus
             />
 
+            <div>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.4rem', color: 'var(--text-secondary)' }}>
+                Nombre de chapitres
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
+                {[5, 6, 8, 10].map((num) => (
+                  <button
+                    key={num}
+                    type="button"
+                    onClick={() => setNbChapters(num)}
+                    style={{
+                      padding: '0.5rem 0.75rem',
+                      borderRadius: '8px',
+                      border: nbChapters === num ? '1px solid var(--accent-primary)' : '1px solid var(--glass-border)',
+                      backgroundColor: nbChapters === num ? 'rgba(73, 192, 248, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+                      color: nbChapters === num ? 'var(--accent-primary)' : 'var(--text-primary)',
+                      fontWeight: nbChapters === num ? 700 : 500,
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {num} chap.
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div style={styles.footerActions}>
               <Button type="button" variant="secondary" onClick={onClose}>
                 Annuler
               </Button>
               <Button type="submit" variant="primary" iconLeft={<Sparkles size={16} />}>
-                Générer le cours
+                Générer le cours ({nbChapters} chapitres)
               </Button>
             </div>
           </form>

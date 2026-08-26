@@ -115,7 +115,7 @@ export const LessonView: React.FC = () => {
   const isCompleted = currentUser.completedChapters.includes(chapterId);
   const currentContent = dynamicContent || chapter.content || '';
 
-  // Parse le contenu JSON en ContentBlock[]
+  // Parse le contenu JSON ou Texte brut avec Code Markdown en ContentBlock[]
   const parseBlocks = (): ContentBlock[] => {
     try {
       const parsed = JSON.parse(currentContent);
@@ -127,39 +127,105 @@ export const LessonView: React.FC = () => {
           id: 'b-intro',
           type: 'info',
           title: 'Introduction & Objectifs',
-          content: parsed.introduction,
+          content: typeof parsed.introduction === 'string' ? parsed.introduction : JSON.stringify(parsed.introduction),
         });
       }
-      if (parsed.theory) {
+      if (parsed.theory && parsed.theory !== parsed.introduction) {
         blocks.push({
           id: 'b-theory',
           type: 'paragraph',
           title: 'Explications Théoriques',
-          content: parsed.theory,
+          content: typeof parsed.theory === 'string' ? parsed.theory : JSON.stringify(parsed.theory),
         });
       }
       if (parsed.practicalExample || parsed.codeExample) {
+        let codeVal = parsed.practicalExample || parsed.codeExample;
+        if (typeof codeVal === 'object' && codeVal !== null) {
+          if (Array.isArray(codeVal)) {
+            codeVal = codeVal.map((item: any) => item.code || item.content || (typeof item === 'string' ? item : JSON.stringify(item))).join('\n\n');
+          } else {
+            codeVal = codeVal.code || codeVal.content || JSON.stringify(codeVal);
+          }
+        } else if (typeof codeVal === 'string' && (codeVal.trim().startsWith('[') || codeVal.trim().startsWith('{'))) {
+          try {
+            const nested = JSON.parse(codeVal);
+            if (Array.isArray(nested)) {
+              codeVal = nested.map((item: any) => item.code || item.content || (typeof item === 'string' ? item : JSON.stringify(item))).join('\n\n');
+            } else if (typeof nested === 'object' && nested !== null) {
+              codeVal = nested.code || nested.content || JSON.stringify(nested);
+            }
+          } catch {
+            // conserve la chaîne originale
+          }
+        }
+
         blocks.push({
           id: 'b-code',
           type: 'code',
-          title: 'Exemple Pratique',
-          content: parsed.practicalExample || parsed.codeExample,
+          title: 'Exemple Pratique & Code',
+          content: codeVal,
         });
       }
       if (parsed.keyTakeaways && Array.isArray(parsed.keyTakeaways)) {
+        const cleanTakeaways = parsed.keyTakeaways.map((item: any) => 
+          typeof item === 'string' ? item : item.name || item.title || item.point || JSON.stringify(item)
+        );
         blocks.push({
           id: 'b-takeaways',
           type: 'list',
           title: 'Points Clés à Retenir',
-          items: parsed.keyTakeaways,
+          items: cleanTakeaways,
         });
       }
-      return blocks.length > 0
-        ? blocks
-        : [{ id: 'b-1', type: 'paragraph', title: 'Contenu', content: currentContent }];
+      if (blocks.length > 0) return blocks;
     } catch {
-      return [{ id: 'b-raw', type: 'paragraph', title: 'Explications', content: currentContent }];
+      // Pas de JSON pur, analyse du texte brut avec détection des blocs de code ```
     }
+
+    // Traitement du texte brut avec découpage des blocs de code (```)
+    const blocks: ContentBlock[] = [];
+    const codeRegex = /```(?:[a-zA-Z]*\n)?([\s\S]*?)```/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+    let blockIdCounter = 1;
+
+    while ((match = codeRegex.exec(currentContent)) !== null) {
+      const textBefore = currentContent.substring(lastIndex, match.index).trim();
+      if (textBefore) {
+        blocks.push({
+          id: `b-txt-${blockIdCounter++}`,
+          type: 'paragraph',
+          title: blocks.length === 0 ? 'Explications' : 'Notes Complémentaires',
+          content: textBefore,
+        });
+      }
+
+      const codeText = match[1].trim();
+      if (codeText) {
+        blocks.push({
+          id: `b-code-${blockIdCounter++}`,
+          type: 'code',
+          title: 'Exemple de Code',
+          content: codeText,
+        });
+      }
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    const remainingText = currentContent.substring(lastIndex).trim();
+    if (remainingText) {
+      blocks.push({
+        id: `b-txt-${blockIdCounter++}`,
+        type: 'paragraph',
+        title: blocks.length === 0 ? 'Contenu de la Leçon' : 'Résumé',
+        content: remainingText,
+      });
+    }
+
+    return blocks.length > 0
+      ? blocks
+      : [{ id: 'b-raw', type: 'paragraph', title: 'Explications', content: currentContent }];
   };
 
   const currentBlocks = isEditing ? editBlocks : parseBlocks();

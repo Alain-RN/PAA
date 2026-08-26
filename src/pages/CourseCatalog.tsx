@@ -11,6 +11,7 @@ import {
   BookOpen,
   Plus,
   X,
+  Trash2,
 } from "lucide-react";
 import { generateCourseWithAI } from "../services/aiService";
 
@@ -62,7 +63,7 @@ const inferCategoryFromTopic = (topic: string): string => {
 };
 
 export const CourseCatalog: React.FC = () => {
-  const { currentUser, courses, addCourse, addQuestionsForChapter } =
+  const { currentUser, courses, addCourse, deleteCourse, addQuestionsForChapter } =
     useAppState();
   const navigate = useNavigate();
 
@@ -73,6 +74,13 @@ export const CourseCatalog: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   if (!currentUser) return null;
+
+  const handleDeleteCourse = (e: React.MouseEvent, courseId: string, courseTitle: string) => {
+    e.stopPropagation();
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer définitivement le cours "${courseTitle}" ?`)) {
+      deleteCourse(courseId);
+    }
+  };
 
   const handleGenerateCourse = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -231,15 +239,35 @@ export const CourseCatalog: React.FC = () => {
               <div key={course.id} style={styles.duoCard}>
                 {/* Upper Section */}
                 <div style={styles.cardUpper}>
-                  {/* Top Row: Chapters count (Left) & XP Badge (Right) */}
+                  {/* Top Row: Chapters count (Left) & XP Badge + Delete Action (Right) */}
                   <div style={styles.topMetaRow}>
                     <div style={styles.chaptersBadge}>
                       <BookOpen size={24} color="var(--accent-primary)" />
                       <span>{course.chapters.length} chapitres</span>
                     </div>
 
-                    <div style={styles.xpPill}>
-                      <span>+ {course.xpReward} XP</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <div style={styles.xpPill}>
+                        <span>+ {course.xpReward} XP</span>
+                      </div>
+
+                      <button
+                        onClick={(e) => handleDeleteCourse(e, course.id, course.title)}
+                        title="Supprimer ce cours"
+                        style={styles.deleteIconButton}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.25)";
+                          e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.6)";
+                          e.currentTarget.style.color = "#ef4444";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.1)";
+                          e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.25)";
+                          e.currentTarget.style.color = "#f87171";
+                        }}
+                      >
+                        <Trash2 size={15} />
+                      </button>
                     </div>
                   </div>
 
@@ -261,8 +289,7 @@ export const CourseCatalog: React.FC = () => {
                     <ProgressBar progress={progress} showPercentage={false} />
                   </div>
 
-
-                  {/* Duolingo 3D Button */}
+                  {/* Duolingo 3D Full-Width Button */}
                   <Button
                     variant={isCompleted ? "accent" : "primary"}
                     fullWidth
@@ -412,6 +439,20 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: "0 3px 0 #b45309",
     padding: "0.25rem 0.65rem",
     borderRadius: "10px",
+  },
+  deleteIconButton: {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "32px",
+    height: "32px",
+    borderRadius: "10px",
+    backgroundColor: "rgba(239, 68, 68, 0.1)",
+    border: "1px solid rgba(239, 68, 68, 0.25)",
+    color: "#f87171",
+    cursor: "pointer",
+    transition: "all 0.2s ease-in-out",
+    outline: "none",
   },
 
   duoTitle: {

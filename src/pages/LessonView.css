@@ -270,51 +270,138 @@
 }
 
 .lesson-section.example {
-  background: #0e1a20;
-  border-color: #2b3940;
-  box-shadow: 0 5px 0 #0a1318;
+  background: linear-gradient(185deg, #0f172a 0%, #090d16 100%);
+  border: 1px solid #1e293b;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+  gap: 0;
 }
 
 .lesson-code-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #2b3940;
-  margin-bottom: 0.75rem;
+  justify-content: space-between;
+  padding: 0.65rem 1rem;
+  background: #161e2e;
+  border-bottom: 1px solid #1e293b;
+  margin-bottom: 0;
 }
 
 .lesson-code-dots {
   display: flex;
-  gap: 5px;
+  gap: 6px;
+  align-items: center;
 }
 .lesson-code-dots span {
   width: 10px;
   height: 10px;
   border-radius: 50%;
 }
-.lesson-code-dots span:nth-child(1) { background: #ff5f56; }
-.lesson-code-dots span:nth-child(2) { background: #ffbd2e; }
-.lesson-code-dots span:nth-child(3) { background: #27c93f; }
+.lesson-code-dots span:nth-child(1) { background: #ef4444; }
+.lesson-code-dots span:nth-child(2) { background: #f59e0b; }
+.lesson-code-dots span:nth-child(3) { background: #10b981; }
+
+.lesson-code-lang-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  text-transform: uppercase;
+}
+
+.lesson-copy-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  border-radius: 8px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lesson-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.lesson-copy-btn.copied {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.lesson-code-editor-container {
+  padding: 0.85rem 0;
+  background: #090d16;
+  overflow-x: auto;
+}
 
 .lesson-code-body {
-  font-family: inherit;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', monospace;
   font-size: 0.88rem;
-  color: #e2e8f0;
-  white-space: pre-wrap;
-  line-height: 1.65;
+  line-height: 1.7;
   margin: 0;
 }
 
-.lesson-example-text {
-  font-size: 0.92rem;
-  color: #cbd5e1;
-  line-height: 1.75;
+.code-line {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.12rem 1rem;
+  transition: background 0.12s ease;
+}
+
+.code-line:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.code-line-num {
+  width: 32px;
+  flex-shrink: 0;
+  user-select: none;
+  color: #475569;
+  font-size: 0.78rem;
+  text-align: right;
+  padding-right: 1rem;
+  font-family: monospace;
+}
+
+.code-line-content {
+  flex: 1;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.code-comment {
+  color: #64748b;
+  font-style: italic;
+  flex: 1;
+  white-space: pre-wrap;
+}
+
+.code-token.code-string {
+  color: #fde047;
+}
+
+.code-token.code-keyword {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.code-token.code-number {
+  color: #f472b6;
+}
+
+.code-token.code-plain {
+  color: #e2e8f0;
 }
 
 .lesson-section.takeaways {

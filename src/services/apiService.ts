@@ -82,6 +82,13 @@ export const backendAPI = {
     });
   },
 
+  // Delete Course from Postgres
+  deleteCourse: async (courseId: string) => {
+    return fetchFromBackend(`/courses/${courseId}`, {
+      method: 'DELETE',
+    });
+  },
+
   // Generate detailed chapter content on-demand via AI (long timeout for llama.cpp)
   generateChapterContent: async (courseId: string, chapterId: string, courseTitle: string, chapterTitle: string) => {
     return fetchFromBackend('/courses/generate-chapter', {

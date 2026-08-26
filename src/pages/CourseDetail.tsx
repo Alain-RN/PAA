@@ -17,6 +17,7 @@ import {
   Compass,
   ChevronsRight,
   Star,
+  Trash2,
 } from "lucide-react";
 import { Button, ProgressBar } from "../components/ui";
 import "./CourseDetail.css";
@@ -24,7 +25,7 @@ import "./CourseDetail.css";
 export const CourseDetail: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
-  const { currentUser, courses } = useAppState();
+  const { currentUser, courses, deleteCourse } = useAppState();
 
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
   const [selectedChapter, setSelectedChapter] = useState<any | null>(null);
@@ -42,6 +43,13 @@ export const CourseDetail: React.FC = () => {
       </div>
     );
   }
+
+  const handleDeleteCourse = () => {
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer définitivement le cours "${course.title}" ?`)) {
+      deleteCourse(course.id);
+      navigate("/catalog");
+    }
+  };
 
   const completedCount = course.chapters.filter((ch) =>
     currentUser.completedChapters.includes(ch.id),
@@ -73,8 +81,8 @@ export const CourseDetail: React.FC = () => {
 
   return (
     <div className="course-detail-container">
-      {/* Bouton Retour */}
-      <div>
+      {/* Boutons Retour et Suppression */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Button
           variant="secondary"
           size="sm"
@@ -82,6 +90,15 @@ export const CourseDetail: React.FC = () => {
           iconLeft={<ArrowLeft size={16} />}
         >
           Retour au catalogue
+        </Button>
+
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={handleDeleteCourse}
+          iconLeft={<Trash2 size={16} />}
+        >
+          Supprimer ce cours
         </Button>
       </div>
 

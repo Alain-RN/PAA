@@ -23,42 +23,27 @@ const DIFFICULTY_XP: Record<string, number> = {
 };
 
 function buildChapterContent(subject: string, chapterIdx: number, _totalChapters: number, difficulty: string): string {
-  const phases = ['introduction', 'fondamentaux', 'pratique', 'avancé', 'expert', 'maîtrise'];
+  const phases = [
+    'Introduction & Principes de Base',
+    'Architecture & Structure des Données',
+    'Mise en Pratique & Exemple de Code Concret',
+    'Techniques Avancées & Modèles de Conception',
+    'Optimisation des Performances & Sécurité',
+    'Projet Pratique Complète & Intégration'
+  ];
   const phase = phases[Math.min(chapterIdx, phases.length - 1)];
+  const subjectSlug = subject.toLowerCase().replace(/[^a-z0-9]/g, '_');
 
-  const difficultyLabel = difficulty === 'Débutant' ? 'des bases solides' : difficulty === 'Intermédiaire' ? 'une maîtrise intermédiaire' : 'une expertise avancée';
-
-  return `Ce chapitre ${chapterIdx + 1} aborde la phase "${phase}" du sujet "${subject}".
-
-**Objectifs pédagogiques :**
-À l'issue de ce chapitre, vous serez capable de :
-- Comprendre les concepts fondamentaux liés à cette phase de "${subject}"
-- Appliquer les techniques enseignées dans un contexte réel
-- Analyser et résoudre des problèmes courants associés à ce niveau
-
-**Contenu principal :**
-La maîtrise de "${subject}" au niveau ${chapterIdx + 1} repose sur une compréhension progressive des mécanismes sous-jacents. Ce chapitre vous guidera depuis les concepts théoriques jusqu'aux applications concrètes, en vous donnant ${difficultyLabel}.
-
-**Concepts clés :**
-1. **Définition et contexte** : Comprendre pourquoi ce domaine est essentiel dans le paysage technologique actuel.
-2. **Mécanismes de base** : Explorer les principes qui régissent le fonctionnement à ce niveau.
-3. **Cas d'usage pratiques** : Étudier des exemples réels et des scénarios d'application.
-4. **Bonnes pratiques** : Adopter les standards de l'industrie pour un code propre et maintenable.
-5. **Erreurs courantes** : Identifier et éviter les pièges fréquents lors de la mise en pratique.
-
-**Exemple concret :**
-\`\`\`
-// Exemple de mise en oeuvre — ${subject} (Phase ${chapterIdx + 1})
-// Adaptez cet exemple à votre contexte spécifique
-const exemple = {
-  sujet: "${subject}",
-  phase: "${phase}",
-  niveau: "${difficulty}",
-};
-\`\`\`
-
-**Résumé :**
-Ce chapitre pose les fondations nécessaires pour progresser vers les étapes suivantes. Prenez le temps de pratiquer les exercices associés avant de passer au chapitre suivant.`;
+  return JSON.stringify({
+    introduction: `Bienvenue dans le chapitre ${chapterIdx + 1} du cours sur "${subject}". Dans ce module, nous allons explorer ${phase.toLowerCase()} pour acquérir des compétences pratiques directement exploitables.`,
+    theory: `La maîtrise de ${subject} nécessite une compréhension approfondie des mécanismes clés. Ce chapitre aborde la phase "${phase}". Il est essentiel d'assimiler la théorie et d'examiner attentivement la mise en œuvre pratique dans les blocs de code ci-dessous.`,
+    practicalExample: `// ---------------------------------------------------------\n// EXEMPLE PRATIQUE CONCRET : ${subject.toUpperCase()}\n// Module : Chapitre ${chapterIdx + 1} (${phase})\n// Niveau : ${difficulty}\n// ---------------------------------------------------------\n\nfunction init_${subjectSlug}_demo() {\n  const payload = {\n    topic: "${subject}",\n    chapterIndex: ${chapterIdx + 1},\n    phase: "${phase}",\n    timestamp: new Date().toISOString(),\n    status: "READY"\n  };\n\n  console.log("🚀 Exécution du module ${subject} - ${phase}...");\n  return payload;\n}\n\n// Déclenchement de la fonction exemple\nconst result = init_${subjectSlug}_demo();\nconsole.log("✅ Résultat du module :", result);`,
+    keyTakeaways: [
+      `Maîtriser les notions clés de la phase "${phase}" pour ${subject}`,
+      `Examiner et tester l'exemple de code pour en comprendre la logique métier`,
+      `Appliquer les bonnes pratiques et conventions de code présentées`
+    ]
+  });
 }
 
 function buildQuestions(chapterId: string, subject: string, chapterTitle: string): Question[] {

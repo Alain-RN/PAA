@@ -415,8 +415,8 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const addCourse = (course: Course) => {
     setCourses(prev => {
-      const exists = prev.some(c => c.id === course.id);
-      return exists ? prev.map(c => c.id === course.id ? course : c) : [...prev, course];
+      const filtered = prev.filter(c => c.id !== course.id);
+      return [course, ...filtered];
     });
     backendAPI.saveCourse(course);
   };
@@ -428,6 +428,7 @@ export const AppStateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const deleteCourse = (courseId: string) => {
     setCourses(prev => prev.filter(c => c.id !== courseId));
+    backendAPI.deleteCourse(courseId);
   };
 
   // Inject AI-generated questions into the runtime pool
