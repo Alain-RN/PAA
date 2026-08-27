@@ -30,11 +30,20 @@ export const LessonBlockRenderer: React.FC<LessonBlockRendererProps> = ({
 
   const detectLanguage = (code: string): string => {
     const lower = code.toLowerCase();
+    const lines = code.trim().split('\n');
+    // Ne classer comme code que si au moins 2 lignes ressemblent vraiment à du code
+    const codeLineCount = lines.filter(l => {
+      const t = l.trim();
+      return t.startsWith('//') || t.startsWith('--') || t.startsWith('#') ||
+        /^(function|const|let|var|def |fn |pub |use |import |from |SELECT |INSERT |CREATE |UPDATE |DELETE )/.test(t) ||
+        t.includes('=>') || t.includes('{') || t.includes('};');
+    }).length;
+    if (codeLineCount < 2 && lines.length < 5) return 'TEXT'; // texte naturel (dialogue, recette, etc.)
     if (lower.includes('fn main') || lower.includes('println!') || lower.includes('let mut') || lower.includes('pub struct') || lower.includes('use std::')) return 'RUST';
     if (lower.includes('select ') || lower.includes('create table') || lower.includes('insert into') || lower.includes('from ')) return 'SQL';
-    if (lower.includes('function') || lower.includes('const ') || lower.includes('interface ') || lower.includes('require(')) return 'TYPESCRIPT';
-    if (lower.includes('def ') || lower.includes('import datetime') || lower.includes('self.')) return 'PYTHON';
+    if (lower.includes('def ') || lower.includes('import datetime') || lower.includes('import math') || lower.includes('self.')) return 'PYTHON';
     if (lower.includes('from node:') || lower.includes('workdir') || lower.includes('expose')) return 'DOCKER';
+    if (codeLineCount >= 2 && (lower.includes('function') || lower.includes('const ') || lower.includes('interface ') || lower.includes('require('))) return 'TYPESCRIPT';
     return 'CODE';
   };
 
@@ -187,13 +196,16 @@ export const LessonBlockRenderer: React.FC<LessonBlockRendererProps> = ({
         <div className="lesson-section theory">
           {block.title && (
             <h2 className="lesson-section-title">
-              <Lightbulb size={18} color="#38bdf8" /> {block.title}
+              {block.title.includes('🍳') ? <span>🍳</span> :
+               block.title.includes('🗣') ? <span>🗣️</span> :
+               block.title.includes('🔧') ? <span>🔧</span> :
+               block.title.includes('📐') ? <span>📐</span> :
+               <Lightbulb size={18} color="#38bdf8" />}
+              {' '}{block.title}
             </h2>
           )}
-          <div className="lesson-section-body">
-            {rawStringContent.split('\n\n').map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
+          <div className="lesson-section-body" style={{ whiteSpace: 'pre-wrap' }}>
+            {rawStringContent}
           </div>
         </div>
       )}

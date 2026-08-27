@@ -31,6 +31,23 @@ export const Dashboard: React.FC = () => {
           </p>
         </div>
 
+        {/* Badge tech-first */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          background: 'rgba(99, 102, 241, 0.1)',
+          border: '1px solid rgba(99, 102, 241, 0.25)',
+          borderRadius: '12px',
+          padding: '0.6rem 1rem',
+          fontSize: '0.82rem',
+          fontWeight: 600,
+          color: 'var(--accent-primary)',
+          flexShrink: 0,
+        }}>
+          <span>🚀</span>
+          <span>Spécialiste <strong>Tech & Code</strong></span>
+        </div>
       </div>
 
       {/* ── SECTION TITRE ── */}

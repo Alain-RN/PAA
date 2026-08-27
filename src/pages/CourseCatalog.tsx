@@ -126,13 +126,13 @@ export const CourseCatalog: React.FC = () => {
       <div style={styles.headerRow}>
         <div>
           <h1 className="font-heading" style={{ fontSize: "2.1rem", margin: 0, fontWeight: 800 }}>
-            Mes Cours
+            Catalogue de Cours
           </h1>
           <p
             className="font-body"
             style={{ color: "var(--text-secondary)", margin: "0.3rem 0 0 0" }}
           >
-            Explorez vos cours ou créez un nouveau parcours d'apprentissage en un instant.
+            🚀 Spécialisé <strong style={{ color: 'var(--accent-primary)' }}>Tech & Code</strong> — mais capable d'enseigner n'importe quel sujet.
           </p>
         </div>
 
@@ -162,10 +162,60 @@ export const CourseCatalog: React.FC = () => {
           </div>
 
           <form onSubmit={handleGenerateCourse} style={styles.createForm}>
+            <div style={{ marginBottom: '0.75rem' }}>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: 600 }}>
+                💡 Domaines recommandés (spécialité Tech)
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.75rem' }}>
+                {['TypeScript', 'Python', 'SQL & PostgreSQL', 'Rust', 'React', 'Node.js / API', 'DevOps & Docker', 'Algorithmes'].map(tag => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setTopic(tag)}
+                    style={{
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '8px',
+                      background: 'rgba(99, 102, 241, 0.12)',
+                      border: '1px solid rgba(99, 102, 241, 0.28)',
+                      color: 'var(--accent-primary)',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: 500 }}>
+                Autres sujets supportés
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.75rem' }}>
+                {['Cuisine & Gastronomie', 'Anglais conversationnel', 'Mathématiques', 'Mécanique automobile'].map(tag => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setTopic(tag)}
+                    style={{
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '8px',
+                      background: 'rgba(148, 163, 184, 0.08)',
+                      border: '1px solid rgba(148, 163, 184, 0.2)',
+                      color: 'var(--text-secondary)',
+                      fontSize: '0.75rem',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
             <textarea
               style={styles.courseTextarea}
-              rows={5}
-              placeholder="Quel cours souhaitez-vous apprendre aujourd'hui ? (Ex: Anglais conversationnel pour voyager, Espagnol professionnel, Python pour débutants, Histoire contemporaine, Marketing digital...)"
+              rows={3}
+              placeholder="Ex: TypeScript avancé, SQL & PostgreSQL, Python pour Data Science, Rust..."
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               disabled={isGenerating}

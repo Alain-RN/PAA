@@ -23,25 +23,83 @@ const DIFFICULTY_XP: Record<string, number> = {
 };
 
 function buildChapterContent(subject: string, chapterIdx: number, _totalChapters: number, difficulty: string): string {
+  const text = subject.toLowerCase();
+  const isCuisine = /cuisine|recette|gastronomie|pâtisserie|cuisson|plat|ingrédient|gâteau|chef/i.test(text);
+  const isLangue = /langue|anglais|espagnol|allemand|italien|français|vocabulaire|grammaire|tradu|prononciation|dialogue|voyage/i.test(text);
+  const isMecanique = /mécanique|moteur|voiture|automobile|réparation|bricolage|frein|vidange|outil/i.test(text);
+  const isMath = /math|algèbre|géométrie|calcul|nombre|probabilit|statistique|équation|analyse|arithmétique/i.test(text);
+
+  if (isCuisine) {
+    return JSON.stringify({
+      introduction: `Bienvenue dans le chapitre ${chapterIdx + 1} du cours "${subject}". Nous allons étudier les techniques culinaires et les astuces de chefs pour réussir ce plat.`,
+      theory: `La cuisine repose sur l'équilibre des saveurs, la précision des températures et la fraîcheur des ingrédients. Maîtriser les étapes de préparation garantit une réussite constante.`,
+      practicalExample: `🍳 ATELIER CULINAIRE & RECETTE PAS À PAS : ${subject.toUpperCase()}\n\n• Ingrédients principaux :\n  - Produits frais de qualité et condiments adaptés.\n\n• Étapes de réalisation :\n  1. Préparation (Mise en place) : Éplucher, couper et peser les ingrédients.\n  2. Cuisson : Suivre le temps de cuisson et ajuster à feu moyen.\n  3. Dressage : Assaisonner et présenter élégamment.`,
+      keyTakeaways: [
+        `Soigner la préparation des ingrédients avant la cuisson`,
+        `Contrôler régulièrement la cuisson et les assaisonnements`,
+        `Servir immédiatement pour préserver les textures`
+      ]
+    });
+  }
+
+  if (isLangue) {
+    return JSON.stringify({
+      introduction: `Bienvenue dans le chapitre ${chapterIdx + 1} du cours "${subject}". Nous découvrons les règles essentielles et les expressions clés pour communiquer avec assurance.`,
+      theory: `Pour s'exprimer avec fluidité, il faut associer vocabulaire thématisé et structures de phrases naturelles. L'écoute active et la répétition sont les piliers de l'apprentissage.`,
+      practicalExample: `🗣️ DIALOGUE D'APPLICATION PRATIQUE : ${subject.toUpperCase()}\n\n• Situation :\n  - Personne A : Salutations chaleureuses et question sur le voyage/thématique.\n  - Personne B : Réponse fluide avec le vocabulaire clé du chapitre.\n\n• Exercice :\n  1. Lire le dialogue à voix haute en soignant l'intonation.\n  2. Mémoriser les 5 mots de vocabulaire essentiels.`,
+      keyTakeaways: [
+        `Mémoriser les expressions courantes du chapitre`,
+        `Pratiquer la prononciation à voix haute au quotidien`,
+        `Appliquer la grammaire dans des phrases simples`
+      ]
+    });
+  }
+
+  if (isMecanique) {
+    return JSON.stringify({
+      introduction: `Bienvenue dans le chapitre ${chapterIdx + 1} du cours "${subject}". Nous abordons le diagnostic, l'outillage et les gestes techniques indispensables.`,
+      theory: `La mécanique exige rigueur et méthode. Identifier les symptômes de dysfonctionnement et respecter les couples de serrage évite la dégradation des pièces.`,
+      practicalExample: `🔧 FICHE TECHNIQUE & MAINTENANCE : ${subject.toUpperCase()}\n\n• Outils requis :\n  - Clés adaptées, gants de protection et produit dégraissant.\n\n• Procédure pas à pas :\n  1. Inspection visuelle et sécurisation de la zone de travail.\n  2. Démontage ordonné des éléments défectueux.\n  3. Remplacement, nettoyage et contrôle final de fonctionnement.`,
+      keyTakeaways: [
+        `Mettre les équipements de protection avant toute opération`,
+        `Suivre scrupuleusement l'ordre de démontage/remontage`,
+        `Tester le système en conditions réelles après travail`
+      ]
+    });
+  }
+
+  if (isMath) {
+    return JSON.stringify({
+      introduction: `Bienvenue dans le chapitre ${chapterIdx + 1} du cours "${subject}". Nous étudions les formules, les théorèmes et la méthode de résolution pas à pas.`,
+      theory: `Les mathématiques s'appuient sur la logique et la démonstration. Comprendre la provenance des formules permet de les appliquer sans erreur dans les problèmes.`,
+      practicalExample: `# ---------------------------------------------------------\n# DÉMONSTRATION ET CALCUL RESOLU : ${subject.toUpperCase()}\n# ---------------------------------------------------------\n\nimport math\n\ndef resoudre_exercice_chapitre(x: float):\n    """Exemple de calcul pas à pas."""\n    resultat = math.pow(x, 2) + 2 * x + 1\n    print(f"📊 Pour x = {x}, le résultat calculé est {resultat}")\n    return resultat\n\nresoudre_exercice_chapitre(5.0)`,
+      keyTakeaways: [
+        `Identifier les données de l'énoncé avant de commencer`,
+        `Appliquer rigoureusement les priorités opératoires`,
+        `Vérifier la cohérence du résultat final`
+      ]
+    });
+  }
+
   const phases = [
     'Introduction & Principes de Base',
-    'Architecture & Structure des Données',
-    'Mise en Pratique & Exemple de Code Concret',
-    'Techniques Avancées & Modèles de Conception',
+    'Concepts Fondamentaux & Syntaxe',
+    'Mise en Pratique & Exemple Concret',
+    'Techniques Avancées & Architecture',
     'Optimisation des Performances & Sécurité',
-    'Projet Pratique Complète & Intégration'
+    'Projet Pratique Complet & Intégration'
   ];
   const phase = phases[Math.min(chapterIdx, phases.length - 1)];
   const subjectSlug = subject.toLowerCase().replace(/[^a-z0-9]/g, '_');
 
   return JSON.stringify({
-    introduction: `Bienvenue dans le chapitre ${chapterIdx + 1} du cours sur "${subject}". Dans ce module, nous allons explorer ${phase.toLowerCase()} pour acquérir des compétences pratiques directement exploitables.`,
-    theory: `La maîtrise de ${subject} nécessite une compréhension approfondie des mécanismes clés. Ce chapitre aborde la phase "${phase}". Il est essentiel d'assimiler la théorie et d'examiner attentivement la mise en œuvre pratique dans les blocs de code ci-dessous.`,
-    practicalExample: `// ---------------------------------------------------------\n// EXEMPLE PRATIQUE CONCRET : ${subject.toUpperCase()}\n// Module : Chapitre ${chapterIdx + 1} (${phase})\n// Niveau : ${difficulty}\n// ---------------------------------------------------------\n\nfunction init_${subjectSlug}_demo() {\n  const payload = {\n    topic: "${subject}",\n    chapterIndex: ${chapterIdx + 1},\n    phase: "${phase}",\n    timestamp: new Date().toISOString(),\n    status: "READY"\n  };\n\n  console.log("🚀 Exécution du module ${subject} - ${phase}...");\n  return payload;\n}\n\n// Déclenchement de la fonction exemple\nconst result = init_${subjectSlug}_demo();\nconsole.log("✅ Résultat du module :", result);`,
+    introduction: `Bienvenue dans le chapitre ${chapterIdx + 1} du cours sur "${subject}". Dans ce module, nous allons explorer ${phase.toLowerCase()} pour acquérir des compétences directement exploitables.`,
+    theory: `La maîtrise de ${subject} nécessite une compréhension approfondie des mécanismes clés. Ce chapitre aborde la phase "${phase}". Il est essentiel d'assimiler la théorie et d'examiner attentivement l'exemple ci-dessous.`,
+    practicalExample: `// ---------------------------------------------------------\n// EXEMPLE PRATIQUE CONCRET : ${subject.toUpperCase()}\n// Module : Chapitre ${chapterIdx + 1} (${phase})\n// Niveau : ${difficulty}\n// ---------------------------------------------------------\n\nfunction init_${subjectSlug}_demo() {\n  const payload = {\n    topic: "${subject}",\n    chapterIndex: ${chapterIdx + 1},\n    phase: "${phase}",\n    status: "READY"\n  };\n\n  console.log("🚀 Exécution du module ${subject} - ${phase}...");\n  return payload;\n}\n\nconst result = init_${subjectSlug}_demo();\nconsole.log("✅ Résultat du module :", result);`,
     keyTakeaways: [
       `Maîtriser les notions clés de la phase "${phase}" pour ${subject}`,
-      `Examiner et tester l'exemple de code pour en comprendre la logique métier`,
-      `Appliquer les bonnes pratiques et conventions de code présentées`
+      `Examiner et tester l'exemple pratique pour en comprendre la logique`,
+      `Appliquer les bonnes pratiques et conventions présentées`
     ]
   });
 }
@@ -53,78 +111,78 @@ function buildQuestions(chapterId: string, subject: string, chapterTitle: string
       id: `${chapterId}_q1_easy_${ts}`,
       text: `Quelle est la définition la plus précise du concept central abordé dans "${chapterTitle}" ?`,
       options: [
-        `Un ensemble de règles syntaxiques sans impact fonctionnel`,
-        `Un principe fondamental permettant de structurer et d'organiser "${subject}" de manière efficace`,
-        `Un outil optionnel réservé aux projets de grande envergure`,
-        `Une convention visuelle sans rapport avec la logique métier`,
+        `Une notion secondaire sans impact pratique`,
+        `Un principe fondamental permettant de comprendre et structurer "${subject}" avec succès`,
+        `Un détail technique uniquement réservé aux spécialistes`,
+        `Une convention arbitraire sans rapport avec le sujet`,
       ],
       correctAnswerIndex: 1,
-      explanation: `Le concept central de ce chapitre est un principe fondamental dans "${subject}" qui permet d'organiser et de structurer efficacement les solutions.`,
+      explanation: `Le concept central de ce chapitre est un principe fondamental dans "${subject}" qui permet de structurer efficacement la démarche.`,
       difficulty: 'easy',
     },
     {
       id: `${chapterId}_q2_easy_${ts + 1}`,
       text: `Parmi les affirmations suivantes, laquelle décrit correctement un avantage majeur de "${subject}" ?`,
       options: [
-        `Il complexifie inutilement le code sans apporter de bénéfices`,
-        `Il est uniquement adapté aux petits projets`,
-        `Il améliore la maintenabilité, la lisibilité et la scalabilité des solutions`,
-        `Il remplace totalement la nécessité de tester son code`,
+        `Il complexifie l'apprentissage sans apporter de bénéfices réels`,
+        `Il est uniquement adapté aux situations très rares`,
+        `Il améliore la compréhension, la maîtrise et l'efficacité des solutions apportées`,
+        `Il dispense totalement d'appliquer les principes fondamentaux`,
       ],
       correctAnswerIndex: 2,
-      explanation: `"${subject}" est reconnu pour améliorer significativement la maintenabilité et la scalabilité des projets.`,
+      explanation: `"${subject}" est reconnu pour améliorer significativement la maîtrise et l'efficacité des solutions.`,
       difficulty: 'easy',
     },
     {
       id: `${chapterId}_q3_medium_${ts + 2}`,
       text: `Dans le contexte de "${chapterTitle}", quelle approche est considérée comme la meilleure pratique ?`,
       options: [
-        `Privilégier la rapidité de développement sur la qualité du code`,
-        `Appliquer les principes enseignés de façon rigoureuse dès la conception`,
-        `Ignorer les conventions établies pour favoriser la créativité`,
-        `Copier des solutions existantes sans les adapter au contexte`,
+        `Privilégier la rapidité sans vérifier la méthode`,
+        `Appliquer les principes enseignés de façon méthodique et rigoureuse`,
+        `Ignorer les règles établies pour improviser`,
+        `Copier une méthode sans l'adapter à la situation`,
       ],
       correctAnswerIndex: 1,
-      explanation: `La meilleure pratique consiste à appliquer les principes dès la phase de conception pour garantir la qualité et la maintenabilité à long terme.`,
+      explanation: `La meilleure pratique consiste à appliquer les principes de façon méthodique et adaptée au contexte.`,
       difficulty: 'medium',
     },
     {
       id: `${chapterId}_q4_medium_${ts + 3}`,
-      text: `Comment se manifeste une mauvaise compréhension des concepts de "${chapterTitle}" dans un projet réel ?`,
+      text: `Comment se manifeste une mauvaise application des notions de "${chapterTitle}" ?`,
       options: [
-        `Le projet se termine plus rapidement que prévu`,
-        `Aucun impact visible sur le long terme`,
-        `Le code devient difficile à maintenir, générant des bugs récurrents et une dette technique`,
-        `Les performances s'améliorent automatiquement`,
+        `Le résultat s'améliore automatiquement`,
+        `Aucun impact visible sur la qualité`,
+        `Des erreurs récurrentes et une perte d'efficacité importante`,
+        `La résolution devient instantanée`,
       ],
       correctAnswerIndex: 2,
-      explanation: `Une mauvaise application des concepts entraîne une dette technique, des bugs récurrents et rend le code très difficile à maintenir.`,
+      explanation: `Une mauvaise application des notions entraîne des erreurs récurrentes et une baisse de qualité.`,
       difficulty: 'medium',
     },
     {
       id: `${chapterId}_q5_hard_${ts + 4}`,
-      text: `Dans un scénario avancé appliquant "${subject}", quelle stratégie permet d'optimiser simultanément la performance et la maintenabilité ?`,
+      text: `Dans un cas d'application avancé sur "${subject}", quelle stratégie donne les meilleurs résultats ?`,
       options: [
-        `Réduire au maximum le nombre de fichiers, quitte à concentrer toute la logique dans un seul module`,
-        `Appliquer une séparation des responsabilités stricte couplée à des patterns éprouvés`,
-        `Éviter l'abstraction pour rester proche du code machine`,
-        `Dupliquer le code pour éviter les dépendances entre modules`,
+        `Traiter tout le problème en une seule fois sans méthode`,
+        `Décomposer la situation en étapes claires et appliquer les principes éprouvés`,
+        `Éviter les contrôles de sécurité et de qualité`,
+        `Utiliser des raccourcis risqués`,
       ],
       correctAnswerIndex: 1,
-      explanation: `La séparation des responsabilités et l'utilisation de patterns éprouvés sont les clés pour maintenir une base de code performante et maintenable sur le long terme.`,
+      explanation: `Décomposer le problème en étapes claires et appliquer les principes éprouvés garantit des résultats fiables.`,
       difficulty: 'hard',
     },
     {
       id: `${chapterId}_q6_hard_${ts + 5}`,
-      text: `Face à un problème complexe dans "${subject}", quelle démarche analytique est la plus efficace ?`,
+      text: `Face à une difficulté dans "${chapterTitle}", quelle démarche analytique est la plus efficace ?`,
       options: [
-        `Implémenter immédiatement la première solution qui vient à l'esprit`,
-        `Attendre que le problème se résolve de lui-même`,
-        `Décomposer le problème en sous-problèmes, identifier les patterns connus, puis synthétiser une solution`,
-        `Contourner le problème en changeant les spécifications`,
+        `Attendre sans rien modifier`,
+        `Abandonner le processus et recommencer à zéro`,
+        `Analyser les symptômes, vérifier les principes de base et corriger étape par étape`,
+        `Ignorer les avertissements`,
       ],
       correctAnswerIndex: 2,
-      explanation: `La démarche analytique efficace consiste à décomposer le problème, identifier les patterns connus et construire une solution étape par étape.`,
+      explanation: `L'analyse rigoureuse des symptômes et la vérification des principes de base permettent de résoudre le problème efficacement.`,
       difficulty: 'hard',
     },
   ];

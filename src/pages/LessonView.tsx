@@ -115,6 +115,22 @@ export const LessonView: React.FC = () => {
   const isCompleted = currentUser.completedChapters.includes(chapterId);
   const currentContent = dynamicContent || chapter.content || '';
 
+  // Détecte le domaine du cours pour adapter le rendu
+  const courseText = (course.title + ' ' + course.category).toLowerCase();
+  const courseIsCuisine = /cuisine|recette|gastronomie|pâtisserie|cuisson|plat|chef/i.test(courseText);
+  const courseIsLangue = /langue|anglais|espagnol|allemand|italien|français|vocabulaire|grammaire|voyage|dialogue/i.test(courseText);
+  const courseIsMecanique = /mécanique|moteur|voiture|réparation|bricolage|frein|outil/i.test(courseText);
+  const courseIsMath = /math|algèbre|géométrie|calcul|statistique|équation|arithmétique/i.test(courseText);
+  const courseIsNonTech = courseIsCuisine || courseIsLangue || courseIsMecanique || courseIsMath;
+
+  const getPracticalBlockLabel = (): string => {
+    if (courseIsCuisine) return '🍳 Atelier Culinaire & Recette';
+    if (courseIsLangue) return '🗣️ Dialogue & Exercice Pratique';
+    if (courseIsMecanique) return '🔧 Fiche Technique & Procédure';
+    if (courseIsMath) return '📐 Exercice Résolu Pas à Pas';
+    return 'Exemple Pratique & Code';
+  };
+
   // Parse le contenu JSON ou Texte brut avec Code Markdown en ContentBlock[]
   const parseBlocks = (): ContentBlock[] => {
     try {
@@ -161,8 +177,8 @@ export const LessonView: React.FC = () => {
 
         blocks.push({
           id: 'b-code',
-          type: 'code',
-          title: 'Exemple Pratique & Code',
+          type: courseIsNonTech ? 'paragraph' : 'code',
+          title: getPracticalBlockLabel(),
           content: codeVal,
         });
       }

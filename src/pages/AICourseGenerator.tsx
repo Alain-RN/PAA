@@ -81,10 +81,10 @@ export const AICourseGenerator: React.FC<Props> = ({ onClose }) => {
             </div>
             <div>
               <h2 className="font-heading" style={styles.headerTitle}>
-                Créer un cours
+                Créer un cours avec l'IA
               </h2>
               <p className="font-body" style={styles.headerSubtitle}>
-                Entrez le sujet et choisissez la densité du cours.
+                🚀 Spécialité <strong>Tech & Code</strong> — et bien plus encore.
               </p>
             </div>
           </div>
@@ -105,7 +105,7 @@ export const AICourseGenerator: React.FC<Props> = ({ onClose }) => {
             <Input
               label="Sujet du cours"
               iconLeft={<Search size={16} />}
-              placeholder="Ex: TypeScript, Python pour la Data, SQL, Sécurité Web..."
+              placeholder="Ex: TypeScript, Python, SQL & PostgreSQL, React, DevOps, Rust... ou autre chose !"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required

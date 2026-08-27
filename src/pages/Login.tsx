@@ -45,7 +45,10 @@ export const Login: React.FC = () => {
             Malloow<span style={{ color: 'var(--accent-primary)' }}>.ia</span>
           </h1>
           <p className="font-body" style={styles.subtitle}>
-            Plateforme d'apprentissage adaptative & gamifiée pour Licence Informatique
+            🚀 Votre académie IA spécialisée <strong style={{ color: 'var(--accent-primary)' }}>Tech & Code</strong>
+          </p>
+          <p className="font-body" style={{ ...styles.subtitle, marginTop: '0.25rem', fontSize: '0.8rem', opacity: 0.65 }}>
+            Développement, Bases de données, DevOps · et bien plus encore
           </p>
         </div>
 
